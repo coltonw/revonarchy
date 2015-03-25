@@ -1,0 +1,22 @@
+{
+  "name": "revonarchy",
+  "version": "0.0.1",
+  "description": "System for choosing a decision maker.",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coltonw/revonarchy.git"
+  },
+  "author": "coltonw@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/coltonw/revonarchy/issues"
+  },
+  "homepage": "https://github.com/coltonw/revonarchy",
+  "dependencies": {
+    "koa": "^0.18.0"
+  },
+  "engines": {
+    "iojs": "1.6.1"
+  }
+}
