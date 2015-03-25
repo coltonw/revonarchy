@@ -14,7 +14,8 @@
   },
   "homepage": "https://github.com/coltonw/revonarchy",
   "dependencies": {
-    "koa": "^0.18.0"
+    "koa": "^0.18.0",
+    "koa-middlewares": "^2.1.0"
   },
   "engines": {
     "iojs": "1.6.1"
