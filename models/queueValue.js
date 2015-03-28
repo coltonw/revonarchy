@@ -1,7 +1,7 @@
 'use strict';
 
 var temporaryDatabase = {};
-var nextId = 0;
+var nextId = 6000;
 
 exports.listByUser = function(userId) {
   var groupId,
@@ -22,7 +22,25 @@ exports.get = function(userId, groupId) {
   }
 };
 
-exports.insert = function(user) {
-  temporaryDatabase[nextId] = user;
+exports.create = function(userId, groupId) {
+  if(!groupId) {
+    groupId = nextId;
+  }
+  temporaryDatabase[userId] = {
+    userId: userId,
+    groupId: groupId,
+    queueValue: Math.random()
+  };
   nextId++;
+};
+
+exports.update = function(queueValue) {
+  var userId = queueValue.userId,
+      groupId = queueValue.groupId;
+
+  if(temporaryDatabase[userId] && temporaryDatabase[userId][groupId]) {
+    temporaryDatabase[userId][groupId] = queueValue;
+  } else {
+    throw new Error('No such queueValue');
+  }
 };
