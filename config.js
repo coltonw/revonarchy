@@ -10,7 +10,9 @@ var path = require('path');
 var config = {
   version: version,
   debug: process.env.NODE_ENV !== 'production',
-  port: process.env.PORT || 7001
+  port: process.env.PORT || 7001,
+  minGroupSize: 3,
+  minGroupPercent: 0.35
 };
 
 module.exports = config;
