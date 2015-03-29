@@ -7,7 +7,7 @@ exports.listByUser = function(userId) {
   var groupId,
       list = [];
   for (groupId in temporaryDatabase[userId]) {
-    if (temporaryDatabase.hasOwnProperty(groupId)) {
+    if (temporaryDatabase[userId].hasOwnProperty(groupId)) {
       list.push(temporaryDatabase[userId][groupId]);
     }
   }
@@ -25,13 +25,17 @@ exports.get = function(userId, groupId) {
 exports.create = function(userId, groupId) {
   if(!groupId) {
     groupId = nextId;
+    nextId++;
   }
-  temporaryDatabase[userId] = {
+  if(!temporaryDatabase[userId]) {
+    temporaryDatabase[userId] = {};
+  }
+  temporaryDatabase[userId][groupId] = {
     userId: userId,
     groupId: groupId,
     queueValue: Math.random()
   };
-  nextId++;
+  return temporaryDatabase[userId][groupId];
 };
 
 exports.update = function(queueValue) {

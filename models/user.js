@@ -20,6 +20,8 @@ exports.get = function(id) {
 };
 
 exports.insert = function(user) {
+  user.id = nextId;
   temporaryDatabase[nextId] = user;
   nextId++;
+  return user;
 };

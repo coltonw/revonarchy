@@ -33,7 +33,6 @@ exports.revonarch = function* () {
       userHash = {},
       allQueueValues = {},
       i, userId,
-      // TODO: Remove this silliness :)
       revonarch;
 
   for (i = 0; i < users.length; i++) {
@@ -90,7 +89,6 @@ exports.revonarch = function* () {
   }
   queueValues[0].queueValue = tmpValue;
   QueueValue.update(queueValues[0]);
-  // TODO: Get Revonarch and rotate all queue values and save them
 
   // All hail the new Revonarch!
   this.body = revonarch;
