@@ -14,6 +14,18 @@ exports.listByUser = function(userId) {
   return list;
 };
 
+exports.listByGroup = function(groupId) {
+  var userId,
+      list = [];
+  for (userId in temporaryDatabase) {
+    if (temporaryDatabase.hasOwnProperty(userId) &&
+        temporaryDatabase[userId][groupId]) {
+      list.push(temporaryDatabase[userId][groupId]);
+    }
+  }
+  return list;
+};
+
 exports.get = function(userId, groupId) {
   if(temporaryDatabase[userId]) {
     return temporaryDatabase[userId][groupId];

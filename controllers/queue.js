@@ -11,21 +11,67 @@ var fs = require('fs');
 var User = require('../models/user');
 var QueueValue = require('../models/queueValue');
 
+// Ties between the most common groups are broken
+// by the smallest group being chosen first.
+// Behavior is undefined if the groups are the same size.
 function chooseGroup(queueValues) {
   var groups = {},
-      userId;
+      userId,
+      i,
+      tmpGroupId,
+      maxGroup = [],
+      maxGroupCount = 0,
+      numUsers = 0;
 
   for (userId in queueValues) {
     if (queueValues.hasOwnProperty(userId)) {
-      // TODO: We want to choose this based on the most shared group
-      // or generate a new group if there is no most shared,
-      // but just to have this running, return first groupId found
-      if (queueValues[userId][0]) {
-        return queueValues[userId][0].groupId;
+      for (i = 0; i < queueValues[userId].length; i++) {
+        tmpGroupId = queueValues[userId][i].groupId;
+        if (!groups[tmpGroupId]) {
+          groups[tmpGroupId] = 1;
+        } else {
+          groups[tmpGroupId]++;
+        }
+        if (groups[tmpGroupId] > maxGroupCount) {
+          maxGroupCount = groups[tmpGroupId];
+          maxGroup = [tmpGroupId];
+        } else if (groups[tmpGroupId] === maxGroupCount) {
+          maxGroup.push(tmpGroupId);
+        }
       }
+      numUsers++;
     }
   }
+
+  if (numUsers === maxGroupCount) {
+    return getSmallestGroup(maxGroup);
+  } else if (maxGroupCount >= config.minGroupSize &&
+      maxGroupCount / numUsers >= config.minGroupPercent) {
+    return getSmallestGroup(maxGroup);
+  }
   return null;
+}
+
+function getSmallestGroup(groupIds) {
+  var smallestGroup,
+      smallestGroupSize = 0,
+      i,
+      tmpGroupList;
+  if (groupIds.length < 1) {
+    return null;
+  } else if (groupIds.length === 1) {
+    return groupIds[0];
+  } else {
+    smallestGroup = null;
+    for (i = 0; i < groupIds.length; i++) {
+      tmpGroupList = QueueValue.listByGroup(groupIds[i]);
+      if (tmpGroupList.length > smallestGroupSize) {
+        smallestGroupSize = tmpGroupList.length;
+        smallestGroup = groupIds[i];
+      }
+    }
+    return smallestGroup;
+  }
 }
 
 exports.revonarch = function* () {
