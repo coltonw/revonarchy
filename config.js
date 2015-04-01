@@ -15,4 +15,9 @@ var config = {
   minGroupPercent: 0.35
 };
 
+config.blanket = {
+    "pattern": ["models","controllers"],
+    "data-cover-never": "node_modules"
+};
+
 module.exports = config;
