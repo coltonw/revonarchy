@@ -4,8 +4,8 @@
   "description": "System for choosing a decision maker.",
   "main": "app.js",
   "scripts": {
-    "test": "iojs ./node_modules/mocha/bin/_mocha test/*",
-    "report": "iojs node_modules/mocha/bin/_mocha test/* -R html-cov > coverage.html"
+    "test": "iojs ./node_modules/mocha/bin/_mocha test/**",
+    "report": "iojs node_modules/mocha/bin/_mocha test/** -R html-cov > coverage.html"
   },
   "repository": {
     "type": "git",
