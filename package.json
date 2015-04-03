@@ -4,8 +4,8 @@
   "description": "System for choosing a decision maker.",
   "main": "app.js",
   "scripts": {
-    "test": "iojs ./node_modules/mocha/bin/_mocha test/**",
-    "report": "iojs node_modules/mocha/bin/_mocha test/** -R html-cov > coverage.html"
+    "test": "iojs ./node_modules/mocha/bin/_mocha test/controllers",
+    "report": "iojs ./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha test/controllers"
   },
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
   },
   "devDependencies": {
     "mocha": "^1.18.2",
+    "istanbul-harmony": "~0.3.0",
     "should": "^4.0.1",
     "supertest": "^0.12.0",
     "coveralls": "^2.10.0",
-    "mocha-lcov-reporter": "0.0.1",
-    "blanket": "^1.1.6"
+    "mocha-lcov-reporter": "0.0.1"
   }
 }

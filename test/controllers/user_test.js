@@ -1,8 +1,7 @@
 var config = require('../../config'),
     request = require('supertest'),
-    app = require('../../app'),
     should = require('should'),
-    blanket = require('blanket')(config.blanket);
+    app = require('../../app');
 
 describe('user controller', function(){
   it('should create a user and return a user with an id', function(done){

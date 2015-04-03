@@ -1,8 +1,7 @@
 var config = require('../../config'),
     request = require('supertest'),
-    app = require('../../app'),
     should = require('should'),
-    blanket = require('blanket')(config.blanket);
+    app = require('../../app');
 
 function testPost(route, body) {
   return new Promise(function(resolve, reject) {

@@ -1,4 +1,3 @@
 node_modules
-coverage.html
-coverage.lcov
+/coverage
 npm-debug.log

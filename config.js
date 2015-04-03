@@ -16,8 +16,8 @@ var config = {
 };
 
 config.blanket = {
-    "pattern": ["models","controllers"],
-    "data-cover-never": "node_modules"
+    "pattern": [""],
+    "data-cover-never": ["node_modules", "test" ]
 };
 
 module.exports = config;
