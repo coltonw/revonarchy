@@ -12,7 +12,7 @@ exports.getByEmail = function(email) {
       }
     }
   }
-
+  return null;
 };
 
 exports.get = function(id) {
@@ -20,8 +20,13 @@ exports.get = function(id) {
 };
 
 exports.insert = function(user) {
-  user.id = nextId;
-  temporaryDatabase[nextId] = user;
-  nextId++;
-  return user;
+  var existingUser = exports.getByEmail(user.email);
+  if(existingUser) {
+    return existingUser;
+  } else {
+    user.id = nextId;
+    temporaryDatabase[nextId] = user;
+    nextId++;
+    return user;
+  }
 };
