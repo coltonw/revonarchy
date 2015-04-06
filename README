@@ -20,7 +20,7 @@ such that every participant has their **queue value** lowered except the
 
 ### Determining Groups
 
-The list os users is submitted.  All the queue values are grabbed for all the
+The list of users is submitted.  All the queue values are grabbed for all the
 users.  If there is any group id which among those which either 100% of the
 users have queue values for or at least a minimum number have queue values for
 (going to choose 3 at first) *and* at least some percentage have queue values for
