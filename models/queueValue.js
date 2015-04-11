@@ -1,7 +1,9 @@
 'use strict';
 
-var temporaryDatabase = {};
-var nextId = 6000;
+var config = require('../config'),
+    mongoose = require('mongoose');
+
+mongoose.connect(config.mongoUri);
 
 exports.listByUser = function(userId) {
   var groupId,

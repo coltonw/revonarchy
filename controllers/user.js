@@ -11,8 +11,13 @@ var fs = require('fs');
 var User = require('../models/user');
 
 exports.create = function* () {
-  var user = this.request.body.user;
-  this.body = User.insert(user);
+  var user = this.request.body.user,
+      that = this;
+  User.insert(user).then(function(newUser) {
+    that.body = newUser;
+  }, function(err) {
+    console.log(err);
+  });
 };
 
 exports.get = function* () {

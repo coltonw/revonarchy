@@ -4,3 +4,5 @@ node_js:
 after_script:
   - chmod 777 coveralls.sh
   - ./coveralls.sh
+services:
+  - mongodb
