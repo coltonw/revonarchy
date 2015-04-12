@@ -1,64 +1,59 @@
 'use strict';
 
-var config = require('../config'),
-    mongoose = require('mongoose');
-
-mongoose.connect(config.mongoUri);
+var QueueValue = require('./schemas/queueValue').QueueValue,
+    db = require('../lib/db'),
+    ObjectId = require('mongoose').Types.ObjectId;
 
 exports.listByUser = function(userId) {
-  var groupId,
-      list = [];
-  for (groupId in temporaryDatabase[userId]) {
-    if (temporaryDatabase[userId].hasOwnProperty(groupId)) {
-      list.push(temporaryDatabase[userId][groupId]);
-    }
-  }
-  return list;
+  return new Promise(function(resolve, reject) {
+    QueueValue.find({ userId: userId }, function (err, docs) {
+      if (err) return reject(db.handleError(err));
+      resolve(docs);
+    });
+  });
 };
 
 exports.listByGroup = function(groupId) {
-  var userId,
-      list = [];
-  for (userId in temporaryDatabase) {
-    if (temporaryDatabase.hasOwnProperty(userId) &&
-        temporaryDatabase[userId][groupId]) {
-      list.push(temporaryDatabase[userId][groupId]);
-    }
-  }
-  return list;
+  return new Promise(function(resolve, reject) {
+    QueueValue.find({ groupId: groupId }, function (err, docs) {
+      if (err) return reject(db.handleError(err));
+      resolve(docs);
+    });
+  });
 };
 
 exports.get = function(userId, groupId) {
-  if(temporaryDatabase[userId]) {
-    return temporaryDatabase[userId][groupId];
-  } else {
-    return null;
-  }
+  return new Promise(function(resolve, reject) {
+    QueueValue.findOne({ userId: userId, groupId: groupId }, function (err, docs) {
+      if (err) return reject(db.handleError(err));
+      resolve(docs);
+    });
+  });
 };
 
 exports.create = function(userId, groupId) {
-  if(!groupId) {
-    groupId = nextId;
-    nextId++;
-  }
-  if(!temporaryDatabase[userId]) {
-    temporaryDatabase[userId] = {};
-  }
-  temporaryDatabase[userId][groupId] = {
-    userId: userId,
-    groupId: groupId,
-    queueValue: Math.random()
-  };
-  return temporaryDatabase[userId][groupId];
+  return new Promise(function(resolve, reject) {
+    if(!groupId) {
+      groupId = new ObjectId();
+    }
+    var newQueueValue = new QueueValue({
+      userId: userId,
+      groupId: groupId,
+      queueValue: Math.random()
+    });
+    newQueueValue.save(function(err, queueValue) {
+      if(err) return reject(db.handleError(err));
+      resolve(queueValue);
+    });
+  });
 };
 
+// Update only allows you to update the queueValue.queueValue.
 exports.update = function(queueValue) {
-  var userId = queueValue.userId,
-      groupId = queueValue.groupId;
-
-  if(temporaryDatabase[userId] && temporaryDatabase[userId][groupId]) {
-    temporaryDatabase[userId][groupId] = queueValue;
-  } else {
-    throw new Error('No such queueValue');
-  }
+  return new Promise(function(resolve, reject) {
+    QueueValue.findByIdAndUpdate(queueValue._id, {queueValue: queueValue.queueValue}, function (err, foundQueueValue) {
+      if (err) return reject(db.handleError(err));
+      resolve(foundQueueValue);
+    });
+  });
 };

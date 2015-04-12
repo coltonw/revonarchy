@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 
 exports.queueValueSchema = mongoose.Schema({
-    userId: ObjectId,
-    groupId: ObjectId,
+    userId: mongoose.Schema.ObjectId,
+    groupId: mongoose.Schema.ObjectId,
     queueValue: Number
 });
 
