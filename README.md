@@ -5,7 +5,7 @@
 Keeps a revolving list for choosing a decision maker in a group. Groups are not
 explicitly created but are determined automatically based on the people listed.
 
-[![Build Status](https://travis-ci.org/coltonw/revonarchy.svg?branch=master)](https://travis-ci.org/coltonw/revonarchy) [![Coverage Status](https://img.shields.io/coveralls/coltonw/revonarchy.svg)](https://coveralls.io/r/coltonw/revonarchy) [![Dependency Status](https://gemnasium.com/coltonw/revonarchy.svg)](https://gemnasium.com/coltonw/revonarchy)
+[![Build Status](https://travis-ci.org/coltonw/revonarchy.svg?branch=master)](https://travis-ci.org/coltonw/revonarchy) [![Coverage Status](https://coveralls.io/repos/coltonw/revonarchy/badge.svg?branch=master)](https://coveralls.io/r/coltonw/revonarchy?branch=master) [![Dependency Status](https://gemnasium.com/coltonw/revonarchy.svg)](https://gemnasium.com/coltonw/revonarchy)
 
 ## How it works
 
