@@ -3,8 +3,10 @@ var config = require('../../config'),
     should = require('should'),
     app = require('../../app');
 
+require('../utils');
+
 describe('user controller', function(){
-  it('should create a user and return a user with an id', function(done){
+  it('should create a user and then get the user by email', function(done){
     var emailAddress = 'coltonw@gmail.com';
     request(app)
       .post('/user')

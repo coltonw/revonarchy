@@ -15,7 +15,7 @@ var config = {
   minGroupPercent: 0.35
 };
 
-config.mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/mydb';
+config.mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/revonarchy';
 
 config.blanket = {
     "pattern": [""],
