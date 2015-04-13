@@ -1,32 +1,24 @@
 'use strict';
 
-var temporaryDatabase = {};
-var nextId = 0;
+var User = require('./schemas/user').User;
 
 exports.getByEmail = function(email) {
-  var userId;
-  for (userId in temporaryDatabase) {
-    if (temporaryDatabase.hasOwnProperty(userId)) {
-      if(temporaryDatabase[userId].email === email) {
-        return temporaryDatabase[userId];
-      }
-    }
-  }
-  return null;
+    return User.findOne({ email: email }).exec();
 };
 
 exports.get = function(id) {
-  return temporaryDatabase[id];
+  return User.findById(id).exec();
 };
 
-exports.insert = function(user) {
-  var existingUser = exports.getByEmail(user.email);
+exports.insert = function *(user) {
+  if(!user || !user.email) return new Error('User with email address required');
+  var existingUser = yield exports.getByEmail(user.email);
+  var newUser;
+  // ExistingUser will be null if no document was matched
   if(existingUser) {
     return existingUser;
   } else {
-    user.id = nextId;
-    temporaryDatabase[nextId] = user;
-    nextId++;
-    return user;
+    newUser = new User(user);
+    return newUser.save();
   }
 };

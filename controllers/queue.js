@@ -14,7 +14,7 @@ var QueueValue = require('../models/queueValue');
 // Ties between the most common groups are broken
 // by the smallest group being chosen first.
 // Behavior is undefined if the groups are the same size.
-function chooseGroup(queueValues) {
+function *chooseGroup(queueValues) {
   var groups = {},
       userId,
       i,
@@ -44,15 +44,15 @@ function chooseGroup(queueValues) {
   }
 
   if (numUsers === maxGroupCount) {
-    return getSmallestGroup(maxGroup);
+    return yield getSmallestGroup(maxGroup);
   } else if (maxGroupCount >= config.minGroupSize &&
       maxGroupCount / numUsers >= config.minGroupPercent) {
-    return getSmallestGroup(maxGroup);
+    return yield getSmallestGroup(maxGroup);
   }
   return null;
 }
 
-function getSmallestGroup(groupIds) {
+function *getSmallestGroup(groupIds) {
   var smallestGroup,
       smallestGroupSize = 0,
       i,
@@ -64,7 +64,7 @@ function getSmallestGroup(groupIds) {
   } else {
     smallestGroup = null;
     for (i = 0; i < groupIds.length; i++) {
-      tmpGroupList = QueueValue.listByGroup(groupIds[i]);
+      tmpGroupList = yield QueueValue.listByGroup(groupIds[i]);
       if (tmpGroupList.length > smallestGroupSize) {
         smallestGroupSize = tmpGroupList.length;
         smallestGroup = groupIds[i];
@@ -74,7 +74,7 @@ function getSmallestGroup(groupIds) {
   }
 }
 
-exports.revonarch = function* () {
+exports.revonarch = function *() {
   var users = this.request.body.users,
       userHash = {},
       allQueueValues = {},
@@ -82,12 +82,12 @@ exports.revonarch = function* () {
       revonarch;
 
   for (i = 0; i < users.length; i++) {
-    userId = users[i].id;
+    userId = users[i]._id;
     userHash[userId] = users[i];
-    allQueueValues[userId] = QueueValue.listByUser(userId);
+    allQueueValues[userId] = yield QueueValue.listByUser(userId);
   }
 
-  var groupId = chooseGroup(allQueueValues),
+  var groupId = yield chooseGroup(allQueueValues),
       queueValues = [],
       tmpQueueValue,
       foundQueueValue;
@@ -98,14 +98,14 @@ exports.revonarch = function* () {
       foundQueueValue = false;
       for (i = 0; i < allQueueValues[userId].length; i++) {
         tmpQueueValue = allQueueValues[userId][i];
-        if (tmpQueueValue.groupId === groupId) {
+        if (tmpQueueValue.groupId.equals(groupId)) {
           queueValues.push(tmpQueueValue);
           foundQueueValue = true;
           break;
         }
       }
       if (!foundQueueValue) {
-        tmpQueueValue = QueueValue.create(userId, groupId);
+        tmpQueueValue = yield QueueValue.create(userId, groupId);
         queueValues.push(tmpQueueValue);
         // In the case that the groupId was null, we need to reset the groupId
         // based on the newly generated one.
@@ -131,10 +131,10 @@ exports.revonarch = function* () {
   tmpValue = queueValues[queueValues.length-1].queueValue;
   for(i = queueValues.length-1; i > 0; i--) {
     queueValues[i].queueValue = queueValues[i-1].queueValue;
-    QueueValue.update(queueValues[i]);
+    yield QueueValue.update(queueValues[i]);
   }
   queueValues[0].queueValue = tmpValue;
-  QueueValue.update(queueValues[0]);
+  yield QueueValue.update(queueValues[0]);
 
   // All hail the new Revonarch!
   this.body = revonarch;

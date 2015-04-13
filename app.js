@@ -15,6 +15,7 @@ var config = require('./config');
 var path = require('path');
 var http = require('http');
 var koa = require('koa');
+var mongoose = require('mongoose');
 
 var app = koa();
 
@@ -40,6 +41,18 @@ app.use(middlewares.bodyParser());
 if (config.debug && process.env.NODE_ENV !== 'test') {
   app.use(middlewares.logger());
 }
+
+app.use(function *(next) {
+  try {
+    yield next;
+  } catch (err) {
+    this.status = err.status || 500;
+    this.body = err.message;
+    this.app.emit('error', err, this);
+  }
+});
+
+mongoose.connect(config.mongoUri);
 
 /**
  * router

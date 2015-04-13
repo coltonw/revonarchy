@@ -3,6 +3,8 @@ var config = require('../../config'),
     should = require('should'),
     app = require('../../app');
 
+require('../utils');
+
 function testPost(route, body) {
   return new Promise(function(resolve, reject) {
     request(app)
@@ -38,14 +40,16 @@ describe('queue controller', function(){
       done();
     }).then(function(revonarchResult){
       revonarch1 = revonarchResult;
-      revonarch1.should.have.property('id');
+      revonarch1.should.have.property('_id');
+      usersArray.should.matchAny(revonarch1);
       return testPost('/revonarch', {users:usersArray});
     }, function(){
       should.fail();
       done();
     }).then(function(revonarchResult2){
-      revonarchResult2.should.have.property('id');
-      revonarchResult2.id.should.not.equal(revonarch1.id);
+      revonarchResult2.should.have.property('_id');
+      revonarchResult2._id.should.not.equal(revonarch1._id);
+      usersArray.should.matchAny(revonarchResult2);
       done();
     }, function(){
       should.fail();
