@@ -17,9 +17,4 @@ var config = {
 
 config.mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/revonarchy';
 
-config.blanket = {
-    "pattern": [""],
-    "data-cover-never": ["node_modules", "test" ]
-};
-
 module.exports = config;

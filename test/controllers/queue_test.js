@@ -1,7 +1,7 @@
-var config = require('../../config'),
-    request = require('supertest'),
-    should = require('should'),
-    app = require('../../app');
+var config = require('../../config');
+var request = require('supertest');
+var should = require('should');
+var app = require('../../app');
 
 require('../utils');
 
@@ -13,7 +13,7 @@ function testPost(route, body) {
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
-      .end(function(err, res){
+      .end(function(err, res) {
         if (err) {
           reject();
         } else {
@@ -23,35 +23,36 @@ function testPost(route, body) {
   });
 }
 
-describe('queue controller', function(){
-  it('should return a different user each time it is called', function(done){
-    var emailAddress1 = 'coltonw@gmail.com',
-        emailAddress2 = 'coltonw[thistimewithfeeling]@gmail.com',
-        usersArray, revonarch1;
+describe('queue controller', function() {
+  it('should return a different user each time it is called', function(done) {
+    var emailAddress1 = 'coltonw@gmail.com';
+    var emailAddress2 = 'coltonw[thistimewithfeeling]@gmail.com';
+    var usersArray;
+    var revonarch1;
 
     Promise.all([
       testPost('/user', {user:{email:emailAddress1}}),
       testPost('/user', {user:{email:emailAddress2}})
-    ]).then(function(usersResults){
+    ]).then(function(usersResults) {
       usersArray = usersResults;
       return testPost('/revonarch', {users:usersArray});
-    }, function(){
+    }, function() {
       should.fail();
       done();
-    }).then(function(revonarchResult){
+    }).then(function(revonarchResult) {
       revonarch1 = revonarchResult;
       revonarch1.should.have.property('_id');
       usersArray.should.matchAny(revonarch1);
       return testPost('/revonarch', {users:usersArray});
-    }, function(){
+    }, function() {
       should.fail();
       done();
-    }).then(function(revonarchResult2){
+    }).then(function(revonarchResult2) {
       revonarchResult2.should.have.property('_id');
       revonarchResult2._id.should.not.equal(revonarch1._id);
       usersArray.should.matchAny(revonarchResult2);
       done();
-    }, function(){
+    }, function() {
       should.fail();
       done();
     });

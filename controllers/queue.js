@@ -15,13 +15,13 @@ var QueueValue = require('../models/queueValue');
 // by the smallest group being chosen first.
 // Behavior is undefined if the groups are the same size.
 function *chooseGroup(queueValues) {
-  var groups = {},
-      userId,
-      i,
-      tmpGroupId,
-      maxGroup = [],
-      maxGroupCount = 0,
-      numUsers = 0;
+  var groups = {};
+  var userId;
+  var i;
+  var tmpGroupId;
+  var maxGroup = [];
+  var maxGroupCount = 0;
+  var numUsers = 0;
 
   for (userId in queueValues) {
     if (queueValues.hasOwnProperty(userId)) {
@@ -53,10 +53,10 @@ function *chooseGroup(queueValues) {
 }
 
 function *getSmallestGroup(groupIds) {
-  var smallestGroup,
-      smallestGroupSize = 0,
-      i,
-      tmpGroupList;
+  var smallestGroup;
+  var smallestGroupSize = 0;
+  var i;
+  var tmpGroupList;
   if (groupIds.length < 1) {
     return null;
   } else if (groupIds.length === 1) {
@@ -75,11 +75,12 @@ function *getSmallestGroup(groupIds) {
 }
 
 exports.revonarch = function *() {
-  var users = this.request.body.users,
-      userHash = {},
-      allQueueValues = {},
-      i, userId,
-      revonarch;
+  var users = this.request.body.users;
+  var userHash = {};
+  var allQueueValues = {};
+  var i;
+  var userId;
+  var revonarch;
 
   for (i = 0; i < users.length; i++) {
     userId = users[i]._id;
@@ -87,11 +88,10 @@ exports.revonarch = function *() {
     allQueueValues[userId] = yield QueueValue.listByUser(userId);
   }
 
-  var groupId = yield chooseGroup(allQueueValues),
-      queueValues = [],
-      tmpQueueValue,
-      foundQueueValue;
-
+  var groupId = yield chooseGroup(allQueueValues);
+  var queueValues = [];
+  var tmpQueueValue;
+  var foundQueueValue;
 
   for (userId in allQueueValues) {
     if (allQueueValues.hasOwnProperty(userId)) {
@@ -107,6 +107,7 @@ exports.revonarch = function *() {
       if (!foundQueueValue) {
         tmpQueueValue = yield QueueValue.create(userId, groupId);
         queueValues.push(tmpQueueValue);
+
         // In the case that the groupId was null, we need to reset the groupId
         // based on the newly generated one.
         groupId = tmpQueueValue.groupId;
@@ -128,9 +129,9 @@ exports.revonarch = function *() {
   var tmpValue;
 
   revonarch = userHash[queueValues[0].userId];
-  tmpValue = queueValues[queueValues.length-1].queueValue;
-  for(i = queueValues.length-1; i > 0; i--) {
-    queueValues[i].queueValue = queueValues[i-1].queueValue;
+  tmpValue = queueValues[queueValues.length - 1].queueValue;
+  for (i = queueValues.length - 1; i > 0; i--) {
+    queueValues[i].queueValue = queueValues[i - 1].queueValue;
     yield QueueValue.update(queueValues[i]);
   }
   queueValues[0].queueValue = tmpValue;
@@ -138,5 +139,6 @@ exports.revonarch = function *() {
 
   // All hail the new Revonarch!
   this.body = revonarch;
+
   // HAIL!
 };

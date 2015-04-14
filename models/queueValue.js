@@ -1,7 +1,7 @@
 'use strict';
 
-var QueueValue = require('./schemas/queueValue').QueueValue,
-    ObjectId = require('mongoose').Types.ObjectId;
+var QueueValue = require('./schemas/queueValue').QueueValue;
+var ObjectId = require('mongoose').Types.ObjectId;
 
 exports.listByUser = function(userId) {
   return QueueValue.find({ userId: userId }).exec();
@@ -16,7 +16,7 @@ exports.get = function(userId, groupId) {
 };
 
 exports.create = function(userId, groupId) {
-  if(!groupId) {
+  if (!groupId) {
     groupId = new ObjectId();
   }
   var newQueueValue = new QueueValue({

@@ -1,0 +1,7 @@
+{
+  "preset": "airbnb",
+  "excludeFiles": ["node_modules/**", "coverage/**"],
+  "disallowSpacesInFunctionExpression": null,
+  "disallowSpacesInAnonymousFunctionExpression": null,
+  "requirePaddingNewLinesAfterBlocks": null
+}
