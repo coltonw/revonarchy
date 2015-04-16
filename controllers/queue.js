@@ -5,44 +5,50 @@
  */
 
 var config = require('../config');
-var path = require('path');
-var fs = require('fs');
 
 var User = require('../models/user');
 var QueueValue = require('../models/queueValue');
 var Group = require('../models/group');
 
-exports.revonarch = function *(group) {
-  var users = this.request.body.users;
+var groupController = require('./group');
+var converter = require('../lib/mongooseHelpers');
+
+exports.revonarch = function *() {
+  var users = converter.castIds(this.request.body.users);
+  var groupReq = converter.castIds(this.request.body.group);
+  var expectedGroup = yield groupController.chooseGroup();
   var userHash = {};
-  var allQueueValues = {};
+  var existingQueueValues = {};
   var i;
   var userId;
+  var groupId = groupReq ? groupReq._id : null;
   var revonarch;
 
-  for (i = 0; i < users.length; i++) {
-    userId = users[i]._id;
-    userHash[userId] = users[i];
-    allQueueValues[userId] = yield QueueValue.listByUser(userId);
+  if ((groupReq !== null && expectedGroup !== null && groupReq._id.equals(expectedGroup._id)) ||
+      groupReq !== null || expectedGroup !== null) {
+    throw new Error('Group does not match expected group.');
   }
 
-  var groupId = group._id;
+  for (i = 0; i < users.length; i++) {
+    // We don't want to user an ObjectId as a key in a map
+    userId = users[i]._id.toString;
+    userHash[userId] = users[i];
+    if (groupId) {
+      existingQueueValues[userId] = yield QueueValue.get(userId, groupId);
+    } else {
+      existingQueueValues[userId] = null;
+    }
+  }
+
   var queueValues = [];
   var tmpQueueValue;
   var foundQueueValue;
 
-  for (userId in allQueueValues) {
-    if (allQueueValues.hasOwnProperty(userId)) {
-      foundQueueValue = false;
-      for (i = 0; i < allQueueValues[userId].length; i++) {
-        tmpQueueValue = allQueueValues[userId][i];
-        if (tmpQueueValue.groupId.equals(groupId)) {
-          queueValues.push(tmpQueueValue);
-          foundQueueValue = true;
-          break;
-        }
-      }
-      if (!foundQueueValue) {
+  for (userId in existingQueueValues) {
+    if (existingQueueValues.hasOwnProperty(userId)) {
+      if (existingQueueValues[userId] !== null) {
+        queueValues.push(existingQueueValues[userId]);
+      } else {
         tmpQueueValue = yield QueueValue.create(userId, groupId);
         queueValues.push(tmpQueueValue);
 
@@ -67,8 +73,12 @@ exports.revonarch = function *(group) {
   var tmpValue;
 
   revonarch = userHash[queueValues[0].userId];
-  group.revonarch = revonarch;
-  yield Group.updateRevonarch(group);
+  if(groupReq) {
+    groupReq.revonarch = revonarch._id;
+    yield Group.updateRevonarch(groupReq);
+  } else {
+    yield Group.create(groupId, revonarch._id);
+  }
   tmpValue = queueValues[queueValues.length - 1].queueValue;
   for (i = queueValues.length - 1; i > 0; i--) {
     queueValues[i].queueValue = queueValues[i - 1].queueValue;

@@ -1,19 +1,29 @@
+'use strict';
+
+/**
+ * Module dependencies.
+ */
+
+var config = require('../config');
 
 var QueueValue = require('../models/queueValue');
 var Group = require('../models/group');
+
+var converter = require('../lib/mongooseHelpers');
 
 // Ties between the most common groups are broken
 // by the smallest group being chosen first.
 // Behavior is undefined if the groups are the same size.
 exports.chooseGroup = function *() {
-  var users = this.request.body.users;
+  var users = converter.castIds(this.request.body.users);
   var userHash = {};
   var allQueueValues = {};
   var i;
   var userId;
 
   for (i = 0; i < users.length; i++) {
-    userId = users[i]._id;
+    // We don't want to be using an ObjectId as a key in a hash
+    userId = users[i]._id.toString();
     userHash[userId] = users[i];
     allQueueValues[userId] = yield QueueValue.listByUser(userId);
   }

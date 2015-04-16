@@ -5,8 +5,6 @@
  */
 
 var config = require('../config');
-var path = require('path');
-var fs = require('fs');
 
 var User = require('../models/user');
 
