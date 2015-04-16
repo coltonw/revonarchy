@@ -10,71 +10,9 @@ var fs = require('fs');
 
 var User = require('../models/user');
 var QueueValue = require('../models/queueValue');
+var Group = require('../models/group');
 
-// Ties between the most common groups are broken
-// by the smallest group being chosen first.
-// Behavior is undefined if the groups are the same size.
-function *chooseGroup(queueValues) {
-  var groups = {};
-  var userId;
-  var i;
-  var tmpGroupId;
-  var maxGroup = [];
-  var maxGroupCount = 0;
-  var numUsers = 0;
-
-  for (userId in queueValues) {
-    if (queueValues.hasOwnProperty(userId)) {
-      for (i = 0; i < queueValues[userId].length; i++) {
-        tmpGroupId = queueValues[userId][i].groupId;
-        if (!groups[tmpGroupId]) {
-          groups[tmpGroupId] = 1;
-        } else {
-          groups[tmpGroupId]++;
-        }
-        if (groups[tmpGroupId] > maxGroupCount) {
-          maxGroupCount = groups[tmpGroupId];
-          maxGroup = [tmpGroupId];
-        } else if (groups[tmpGroupId] === maxGroupCount) {
-          maxGroup.push(tmpGroupId);
-        }
-      }
-      numUsers++;
-    }
-  }
-
-  if (numUsers === maxGroupCount) {
-    return yield getSmallestGroup(maxGroup);
-  } else if (maxGroupCount >= config.minGroupSize &&
-      maxGroupCount / numUsers >= config.minGroupPercent) {
-    return yield getSmallestGroup(maxGroup);
-  }
-  return null;
-}
-
-function *getSmallestGroup(groupIds) {
-  var smallestGroup;
-  var smallestGroupSize = 0;
-  var i;
-  var tmpGroupList;
-  if (groupIds.length < 1) {
-    return null;
-  } else if (groupIds.length === 1) {
-    return groupIds[0];
-  } else {
-    smallestGroup = null;
-    for (i = 0; i < groupIds.length; i++) {
-      tmpGroupList = yield QueueValue.listByGroup(groupIds[i]);
-      if (tmpGroupList.length > smallestGroupSize) {
-        smallestGroupSize = tmpGroupList.length;
-        smallestGroup = groupIds[i];
-      }
-    }
-    return smallestGroup;
-  }
-}
-
-exports.revonarch = function *() {
+exports.revonarch = function *(group) {
   var users = this.request.body.users;
   var userHash = {};
   var allQueueValues = {};
@@ -88,7 +26,7 @@ exports.revonarch = function *() {
     allQueueValues[userId] = yield QueueValue.listByUser(userId);
   }
 
-  var groupId = yield chooseGroup(allQueueValues);
+  var groupId = group._id;
   var queueValues = [];
   var tmpQueueValue;
   var foundQueueValue;
@@ -129,6 +67,8 @@ exports.revonarch = function *() {
   var tmpValue;
 
   revonarch = userHash[queueValues[0].userId];
+  group.revonarch = revonarch;
+  yield Group.updateRevonarch(group);
   tmpValue = queueValues[queueValues.length - 1].queueValue;
   for (i = queueValues.length - 1; i > 0; i--) {
     queueValues[i].queueValue = queueValues[i - 1].queueValue;
