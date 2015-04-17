@@ -16,7 +16,7 @@ var converter = require('../lib/mongooseHelpers');
 exports.revonarch = function *() {
   var users = converter.castIds(this.request.body.users);
   var groupReq = converter.castIds(this.request.body.group);
-  var expectedGroup = yield groupController.chooseGroup();
+  var expectedGroup = yield groupController.chooseGroup(users);
   var userHash = {};
   var existingQueueValues = {};
   var i;
@@ -24,14 +24,15 @@ exports.revonarch = function *() {
   var groupId = groupReq ? groupReq._id : null;
   var revonarch;
 
-  if ((groupReq !== null && expectedGroup !== null && groupReq._id.equals(expectedGroup._id)) ||
-      groupReq !== null || expectedGroup !== null) {
+  if ((groupReq !== null && expectedGroup !== null && !groupReq._id.equals(expectedGroup._id)) &&
+      (groupReq !== null ||  expectedGroup !== null)) {
     throw new Error('Group does not match expected group.');
   }
 
+  // Get queue values for all users, or null for users new to the chosen group.
   for (i = 0; i < users.length; i++) {
     // We don't want to user an ObjectId as a key in a map
-    userId = users[i]._id.toString;
+    userId = users[i]._id.toString();
     userHash[userId] = users[i];
     if (groupId) {
       existingQueueValues[userId] = yield QueueValue.get(userId, groupId);
@@ -44,6 +45,7 @@ exports.revonarch = function *() {
   var tmpQueueValue;
   var foundQueueValue;
 
+  // Creating new queue values for users new to the chosen group.
   for (userId in existingQueueValues) {
     if (existingQueueValues.hasOwnProperty(userId)) {
       if (existingQueueValues[userId] !== null) {
@@ -75,9 +77,9 @@ exports.revonarch = function *() {
   revonarch = userHash[queueValues[0].userId];
   if(groupReq) {
     groupReq.revonarch = revonarch._id;
-    yield Group.updateRevonarch(groupReq);
+    tmpValue = yield Group.updateRevonarch(groupReq);
   } else {
-    yield Group.create(groupId, revonarch._id);
+    tmpValue = yield Group.create(groupId, revonarch._id);
   }
   tmpValue = queueValues[queueValues.length - 1].queueValue;
   for (i = queueValues.length - 1; i > 0; i--) {

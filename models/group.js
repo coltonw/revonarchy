@@ -27,6 +27,6 @@ exports.updateTotalUsers = function(group) {
 // Update only works if the current version is found and is updated with an incremented version
 exports.updateRevonarch = function(group) {
   var previousVersion = group.__v;
-  group.increment();
+  group.__v = group.__v + 1;
   return Group.findOneAndUpdate({_id: group._id, __v: previousVersion}, {revonarch: group.revonarch}).exec();
 };

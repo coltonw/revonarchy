@@ -1,5 +1,6 @@
 ## Revonarchy Todo
 
+* Change API to always return a wrapper object around returns.
 * Add group controller and routes.
 * Use group versioning to prevent posting quickly to get a new Revonarch.
 * Add UI.

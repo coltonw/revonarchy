@@ -15,7 +15,7 @@ module.exports = function routes(app) {
   app.get('/user/email/:email', user.get);
   app.post('/user', user.create);
 
-  app.post('/group', group.create);
+  app.post('/group', group.chooseGroupRoute);
 
   app.post('/revonarch', queue.revonarch);
 };
