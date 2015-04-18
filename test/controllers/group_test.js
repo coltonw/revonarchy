@@ -9,11 +9,10 @@ var Group = require('../../models/group');
 
 var utils = require('../utils');
 
-function setupGroup(emailAddresses) {
+function createUsers(emailAddresses) {
   var userPromises = [];
   var i;
   var usersArray = [];
-  var groupId;
 
   for (i = 0; i < emailAddresses.length; i++) {
     userPromises.push(utils.testPost('/user', {user:{email:emailAddresses[i]}}));
@@ -22,6 +21,17 @@ function setupGroup(emailAddresses) {
     for (i = 0; i < usersResults.length; i++) {
       usersArray.push(usersResults[i].user);
     }
+    return Promise.resolve(usersArray);
+  });
+}
+
+function setupGroup(emailAddresses) {
+  var i;
+  var usersArray = [];
+  var groupId;
+
+  return createUsers(emailAddresses).then(function(users) {
+    usersArray = users;
     return QueueValue.create(usersArray[0]._id);
   }).then(function(queueValue) {
     groupId = queueValue.groupId;
@@ -81,8 +91,6 @@ describe('group controller', function() {
     var emailAddress1 = 'coltonw@gmail.com';
     var emailAddress2 = 'coltonw[thistimewithfeeling]@gmail.com';
     var emailAddress3 = 'coltonw[tooManyColtons]@gmail.com';
-    var usersArray = [];
-    var revonarch1;
     var bigGroupId;
     var smallGroupId;
 
@@ -96,6 +104,87 @@ describe('group controller', function() {
         return utils.testPost('/group', {users:groupInfo.users});
       }).then(function(groupResults) {
         groupResults.group._id.should.equal(smallGroupId.toString());
+        done();
+      }).catch(function(e) {
+        e = e || new Error('Promise had a rejection with no error');
+        done(e);
+      });
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it('should return null group when there are fewer matching users than the minimum percent', function(done) {
+    var emailAddresses = [
+      'coltonw@gmail.com',
+      'coltonw[1]@gmail.com',
+      'coltonw[2]@gmail.com',
+      'coltonw[3]@gmail.com',
+      'coltonw[4]@gmail.com',
+      'coltonw[5]@gmail.com',
+      'coltonw[6]@gmail.com',
+      'coltonw[7]@gmail.com',
+      'coltonw[8]@gmail.com',
+      'coltonw[9]@gmail.com',
+      'coltonw[10]@gmail.com',
+      'coltonw[11]@gmail.com'
+    ];
+    var usersArray;
+    var matchingUsers = 3;
+
+    try {
+      matchingUsers.should.be.below(emailAddresses.length * config.minGroupPercent);
+      setupGroup(emailAddresses.slice(0,matchingUsers)).then(function(groupInfo) {
+        usersArray = groupInfo.users;
+        return createUsers(emailAddresses.slice(matchingUsers));
+      }).then(function(users) {
+        usersArray = usersArray.concat(users);
+        usersArray.should.have.property('length', emailAddresses.length);
+        return utils.testPost('/group', {users: usersArray});
+      }).then(function(groupResults) {
+        groupResults.should.have.property('group', null);
+        done();
+      }).catch(function(e) {
+        e = e || new Error('Promise had a rejection with no error');
+        done(e);
+      });
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it('should return matching group when there are more matching users than the minimum percent', function(done) {
+    var emailAddresses = [
+      'coltonw@gmail.com',
+      'coltonw[1]@gmail.com',
+      'coltonw[2]@gmail.com',
+      'coltonw[3]@gmail.com',
+      'coltonw[4]@gmail.com',
+      'coltonw[5]@gmail.com',
+      'coltonw[6]@gmail.com',
+      'coltonw[7]@gmail.com',
+      'coltonw[8]@gmail.com',
+      'coltonw[9]@gmail.com',
+      'coltonw[10]@gmail.com',
+      'coltonw[11]@gmail.com'
+    ];
+    var usersArray;
+    var groupId;
+    var matchingUsers = 5;
+
+    try {
+      matchingUsers.should.be.above(emailAddresses.length * config.minGroupPercent);
+      setupGroup(emailAddresses.slice(0,matchingUsers)).then(function(groupInfo) {
+        groupId = groupInfo.group._id;
+        usersArray = groupInfo.users;
+        return createUsers(emailAddresses.slice(matchingUsers));
+      }).then(function(users) {
+        usersArray = usersArray.concat(users);
+        usersArray.should.have.property('length', emailAddresses.length);
+        return utils.testPost('/group', {users: usersArray});
+      }).then(function(groupResults) {
+        groupResults.should.not.have.property('group', null);
+        groupResults.group._id.should.equal(groupId.toString());
         done();
       }).catch(function(e) {
         e = e || new Error('Promise had a rejection with no error');

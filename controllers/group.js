@@ -75,7 +75,7 @@ exports.chooseGroupRoute = function *() {
 
 function *getSmallestGroup(groupIds) {
   var smallestGroup;
-  var smallestGroupSize = 0;
+  var smallestGroupSize = Number.MAX_SAFE_INTEGER;
   var i;
   var tmpGroupList;
   if (groupIds.length < 1) {
@@ -86,15 +86,14 @@ function *getSmallestGroup(groupIds) {
     smallestGroup = null;
     for (i = 0; i < groupIds.length; i++) {
       tmpGroupList = yield QueueValue.listByGroup(groupIds[i]);
-      if (tmpGroupList.length > smallestGroupSize) {
+      if (tmpGroupList.length < smallestGroupSize) {
         smallestGroupSize = tmpGroupList.length;
         smallestGroup = groupIds[i];
       }
-      return yield Group.updateTotalUsers({
-        _id: smallestGroup,
-        totalUsers: smallestGroupSize
-      });
     }
-    return smallestGroup;
+    return yield Group.updateTotalUsers({
+      _id: smallestGroup,
+      totalUsers: smallestGroupSize
+    });
   }
 }
