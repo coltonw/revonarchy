@@ -19,9 +19,14 @@ exports.create = function *(groupId, revonarchId) {
   return newGroup.save();
 };
 
+// For internal use. May be used later to optimize getSmallestGroup
+exports.updateTotalUsers = function(group) {
+  return Group.findOneAndUpdate({_id: group._id}, {totalUsers: group.totalUsers}).exec();
+};
+
 // Update only works if the current version is found and is updated with an incremented version
-exports.update = function(group) {
+exports.updateRevonarch = function(group) {
   var previousVersion = group.__v;
-  group.increment();
-  return Group.findOneAndUpdate({_id: group._id, __v: previousVersion}, group).exec();
+  group.__v = group.__v + 1;
+  return Group.findOneAndUpdate({_id: group._id, __v: previousVersion}, {revonarch: group.revonarch}).exec();
 };
