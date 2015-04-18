@@ -65,6 +65,7 @@ exports.chooseGroup = function *(users) {
 exports.chooseGroupRoute = function *() {
   var users = converter.castIds(this.request.body.users);
   var group = yield exports.chooseGroup(users);
+
   // You need to wrap the response in case its null,
   // since it still needs to be JSON.
   this.body = {

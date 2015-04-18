@@ -75,7 +75,7 @@ exports.revonarch = function *() {
   var tmpValue;
 
   revonarch = userHash[queueValues[0].userId];
-  if(groupReq) {
+  if (groupReq) {
     groupReq.revonarch = revonarch._id;
     tmpValue = yield Group.updateRevonarch(groupReq);
   } else {
@@ -90,7 +90,7 @@ exports.revonarch = function *() {
   yield QueueValue.update(queueValues[0]);
 
   // All hail the new Revonarch!
-  this.body = revonarch;
+  this.body = {revonarch: revonarch};
 
   // HAIL!
 };

@@ -15,9 +15,11 @@ describe('user controller', function() {
       .expect('Content-Type', /json/)
       .expect(200)
       .end(function(err, res) {
+        if (err) return done(err);
         var genId = null;
-        res.body.should.have.property('_id');
-        genId = res.body._id;
+        res.body.should.have.property('user');
+        res.body.user.should.have.property('_id');
+        genId = res.body.user._id;
 
         // Connection is refused if we do another request within the response
         // so a timeout is needed
@@ -27,8 +29,10 @@ describe('user controller', function() {
             .expect('Content-Type', /json/)
             .expect(200)
             .end(function(err, res) {
-              res.body.should.have.property('email', emailAddress);
-              res.body.should.have.property('_id', genId);
+              if (err) return done(err);
+              res.body.should.have.property('user');
+              res.body.user.should.have.property('email', emailAddress);
+              res.body.user.should.have.property('_id', genId);
               done();
             });
         }, 1);

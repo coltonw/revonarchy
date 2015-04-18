@@ -10,10 +10,12 @@ var User = require('../models/user');
 
 exports.create = function *() {
   var user = this.request.body.user;
-  this.body = yield User.insert(user);
+  var newUser = yield User.insert(user);
+  this.body = {user: newUser};
 };
 
 exports.get = function *() {
   var email = this.params.email;
-  this.body = yield User.getByEmail(email);
+  var user = yield User.getByEmail(email);
+  this.body = {user: user};
 };
