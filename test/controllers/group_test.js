@@ -101,7 +101,36 @@ describe('group controller', function() {
       }).then(function(groupInfo) {
         smallGroupId = groupInfo.group._id;
         smallGroupId.should.not.equal(bigGroupId);
-        return utils.testPost('/group', {users:groupInfo.users});
+        return utils.testPost('/group', {users: groupInfo.users});
+      }).then(function(groupResults) {
+        groupResults.group._id.should.equal(smallGroupId.toString());
+        done();
+      }).catch(function(e) {
+        e = e || new Error('Promise had a rejection with no error');
+        done(e);
+      });
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it('should return the smallest group when the users are part of multiple groups regardless of the order of adding groups', function(done) {
+    var emailAddress1 = 'coltonw@gmail.com';
+    var emailAddress2 = 'coltonw[thistimewithfeeling]@gmail.com';
+    var emailAddress3 = 'coltonw[tooManyColtons]@gmail.com';
+    var bigGroupId;
+    var smallGroupId;
+    var smallGroupUsers;
+
+    try {
+      setupGroup([emailAddress1, emailAddress2]).then(function(groupInfo) {
+        smallGroupId = groupInfo.group._id;
+        smallGroupUsers = groupInfo.users;
+        return setupGroup([emailAddress1, emailAddress2, emailAddress3]);
+      }).then(function(groupInfo) {
+        bigGroupId = groupInfo.group._id;
+        bigGroupId.should.not.equal(smallGroupId);
+        return utils.testPost('/group', {users: smallGroupUsers});
       }).then(function(groupResults) {
         groupResults.group._id.should.equal(smallGroupId.toString());
         done();
@@ -134,7 +163,7 @@ describe('group controller', function() {
 
     try {
       matchingUsers.should.be.below(emailAddresses.length * config.minGroupPercent);
-      setupGroup(emailAddresses.slice(0,matchingUsers)).then(function(groupInfo) {
+      setupGroup(emailAddresses.slice(0, matchingUsers)).then(function(groupInfo) {
         usersArray = groupInfo.users;
         return createUsers(emailAddresses.slice(matchingUsers));
       }).then(function(users) {
@@ -174,7 +203,7 @@ describe('group controller', function() {
 
     try {
       matchingUsers.should.be.above(emailAddresses.length * config.minGroupPercent);
-      setupGroup(emailAddresses.slice(0,matchingUsers)).then(function(groupInfo) {
+      setupGroup(emailAddresses.slice(0, matchingUsers)).then(function(groupInfo) {
         groupId = groupInfo.group._id;
         usersArray = groupInfo.users;
         return createUsers(emailAddresses.slice(matchingUsers));
@@ -185,6 +214,20 @@ describe('group controller', function() {
       }).then(function(groupResults) {
         groupResults.should.not.have.property('group', null);
         groupResults.group._id.should.equal(groupId.toString());
+        done();
+      }).catch(function(e) {
+        e = e || new Error('Promise had a rejection with no error');
+        done(e);
+      });
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it('should return null group when given no users', function(done) {
+    try {
+      utils.testPost('/group', {users: []}).then(function(groupResults) {
+        groupResults.should.have.property('group', null);
         done();
       }).catch(function(e) {
         e = e || new Error('Promise had a rejection with no error');
