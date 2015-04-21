@@ -3,18 +3,21 @@
   <head>
     <meta charset="utf-8">
     <title>Revonarchy</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link href="css/style.css" rel="stylesheet" type="text/css" />
     <script src="http://fb.me/react-with-addons-0.13.1.js"></script>
     <script src="http://fb.me/JSXTransformer-0.13.1.js"></script>
-    <script src="javascript/revonarchy.js"></script>
+    <script src="javascript/script.js"></script>
   </head>
   <body>
-    <div id="rev-header"></div>
+    <div id="rev-header" class="container"></div>
     <script type="text/jsx">
-      React.render(
-        <h1>Revonarchy</h1>,
-        document.getElementById('rev-header')
+      var PageHeader = ReactBootstrap.PageHeader;
+      const pageHeaderInstance = (
+        <PageHeader>Revonarchy <small>Who will rule this day?</small></PageHeader>
       );
+
+      React.render(pageHeaderInstance, document.getElementById('rev-header'));
     </script>
   </body>
 </html>
