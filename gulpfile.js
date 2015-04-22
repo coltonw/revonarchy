@@ -1,10 +1,10 @@
-var gulp = require('gulp'),
-    del = require('del'),
-    less = require('gulp-less'),
-    merge = require('merge-stream'),
-    sourcemaps = require('gulp-sourcemaps'),
-    uglify = require('gulp-uglify'),
-    concat = require('gulp-concat');
+var gulp = require('gulp');
+var del = require('del');
+var less = require('gulp-less');
+var merge = require('merge-stream');
+var sourcemaps = require('gulp-sourcemaps');
+var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
 
 gulp.task('clean', function (cb) {
   del(['public/css', 'public/javascript/script.js'], cb);
@@ -23,12 +23,12 @@ gulp.task('build:css', ['less'], function () {
 });
 
 gulp.task('build:js', ['clean'], function() {
-    return gulp.src(['bower_components/react-bootstrap/react-bootstrap.js', './public/javascript/**/*.js'])
-      .pipe(sourcemaps.init())
-      .pipe(concat('script.js'))
-      .pipe(uglify())
-      .pipe(sourcemaps.write())
-      .pipe(gulp.dest('public/javascript'));
+  return gulp.src(['bower_components/react-bootstrap/react-bootstrap.js', './public/javascript/**/*.js'])
+    .pipe(sourcemaps.init())
+    .pipe(concat('script.js'))
+    .pipe(uglify())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('public/javascript'));
 });
 
 gulp.task('default', ['clean', 'less', 'build:css', 'build:js'], function() {
