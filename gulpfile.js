@@ -5,9 +5,10 @@ var merge = require('merge-stream');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
+var react = require('gulp-react');
 
 gulp.task('clean', function (cb) {
-  del(['public/css', 'public/javascript/script.js'], cb);
+  del(['public/css', 'public/javascript'], cb);
 });
 
 gulp.task('less', ['clean'], function () {
@@ -23,7 +24,10 @@ gulp.task('build:css', ['less'], function () {
 });
 
 gulp.task('build:js', ['clean'], function() {
-  return gulp.src(['bower_components/react-bootstrap/react-bootstrap.js', './public/javascript/**/*.js'])
+  var compiledJsx = gulp.src('./public/jsx/**.jsx')
+    .pipe(react());
+  var libs = gulp.src(['bower_components/react-bootstrap/react-bootstrap.js']);
+  return merge(libs, compiledJsx)
     .pipe(sourcemaps.init())
     .pipe(concat('script.js'))
     .pipe(uglify())
