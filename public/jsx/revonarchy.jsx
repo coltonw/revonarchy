@@ -9,14 +9,12 @@ var Application = function() {
             type='text'
             placeholder='Enter email'
             label='Email Address'
-            value={this.props.userEmail}
             ref='userEmailTextInput'
           />
           <Input
             type='text'
             placeholder='Enter Nickname'
             label='Nickname'
-            value={this.props.userNickname}
             ref='userNicknameInput'
           />
           <Input type='submit' value='Create User' />
@@ -34,11 +32,16 @@ var Application = function() {
     },
 
     render: function() {
+      var Navbar = ReactBootstrap.Navbar;
       var PageHeader = ReactBootstrap.PageHeader;
       return (
-        <div className='container'>
-          <PageHeader>Revonarchy <small>Who will rule this day?</small></PageHeader>
-          <CreateUser userEmail={''} userNickname={''} />
+        <div>
+          <Navbar staticTop='true'>
+            <h1>REVONARCHY <small>Who will rule this day?</small></h1>
+          </Navbar>
+          <div className='container'>
+            <CreateUser userEmail={''} userNickname={''} />
+          </div>
         </div>
       );
     }
