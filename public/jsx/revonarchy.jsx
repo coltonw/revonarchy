@@ -12,6 +12,7 @@ var Application = function() {
       var Input = ReactBootstrap.Input;
       return (
         <form onSubmit={this.props.onSubmit} >
+          <h3>Add comrades who could be chosen as <span className='revonarch-red'>Revonarch</span></h3>
           <Input
             type='text'
             placeholder='Enter email'
