@@ -1,4 +1,4 @@
-var Application = function() {
+var Application = (function() {
 
   var CreateUser = React.createClass({
     handleChange: function() {
@@ -35,7 +35,6 @@ var Application = function() {
     }
   });
 
-
   var Application = React.createClass({
     getInitialState: function() {
       return {
@@ -57,7 +56,7 @@ var Application = function() {
     },
 
     createUser: function(event) {
-      var self = this;
+      var _this = this;
       $.ajax('/user', {
         method: 'post',
         data: JSON.stringify({
@@ -66,11 +65,11 @@ var Application = function() {
             name: this.state.createUser.name
           }
         }),
-        contentType: "application/json; charset=utf-8",
+        contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        success: function(data){
-          if(data && data.user) {
-            self.setState(self.state.users.concat(data.user));
+        success: function(data) {
+          if (data && data.user) {
+            _this.setState(_this.state.users.concat(data.user));
           }
         },
         failure: function(errMsg) {
@@ -97,7 +96,7 @@ var Application = function() {
   });
 
   return Application;
-}();
+})();
 
 $(document).ready(function() {
   React.render(<Application />, document.body);
