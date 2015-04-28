@@ -4,7 +4,7 @@ var Application = function() {
     handleChange: function() {
       this.props.onUserInput(
         this.refs.userEmailTextInput.getValue(),
-        this.refs.userNicknameInput.getValue()
+        this.refs.userNameInput.getValue()
       );
     },
 
@@ -25,9 +25,9 @@ var Application = function() {
             type='text'
             placeholder='Enter Nickname'
             label='Nickname'
-            value={this.props.nickname}
+            value={this.props.name}
             onChange={this.handleChange}
-            ref='userNicknameInput'
+            ref='userNameInput'
           />
           <Input type='submit' value='Create User' />
         </form>
@@ -41,17 +41,17 @@ var Application = function() {
       return {
         createUser: {
           email: '',
-          nickname: ''
+          name: ''
         },
         users: []
       };
     },
 
-    onUserInput: function(email, nickname) {
+    onUserInput: function(email, name) {
       this.setState({
         createUser: {
           email: email,
-          nickname: nickname
+          name: name
         }
       });
     },
@@ -63,7 +63,7 @@ var Application = function() {
         data: JSON.stringify({
           user: {
             email: this.state.createUser.email,
-            name: this.state.createUser.nickname
+            name: this.state.createUser.name
           }
         }),
         contentType: "application/json; charset=utf-8",
@@ -77,6 +77,7 @@ var Application = function() {
           //TODO Handle this error
         }
       });
+      event.preventDefault();
     },
 
     render: function() {
@@ -88,7 +89,7 @@ var Application = function() {
             <h1>REVONARCHY <small>Who will rule this day?</small></h1>
           </Navbar>
           <div className='container'>
-            <CreateUser email={this.state.email} nickname={this.state.nickname} onUserInput={this.onUserInput} onSubmit={this.createUser} />
+            <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput} onSubmit={this.createUser} />
           </div>
         </div>
       );

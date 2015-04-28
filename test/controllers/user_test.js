@@ -39,3 +39,26 @@ describe('user controller', function() {
       });
   });
 });
+
+describe('user controller', function() {
+  it('should create a user with a name and return that user', function(done) {
+    var emailAddress = 'coltonw@gmail.com';
+    var name = 'Will Colton';
+    request(app)
+      .post('/user')
+      .send({user:{email:emailAddress, name:name}})
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(function(err, res) {
+        if (err) return done(err);
+        var genId = null;
+        res.body.should.have.property('user');
+        res.body.user.should.have.property('_id');
+        res.body.user.should.have.property('email', emailAddress);
+        res.body.user.should.have.property('name', name);
+        genId = res.body.user._id;
+        done();
+      });
+  });
+});
