@@ -35,7 +35,7 @@ describe('user controller', function() {
               res.body.user.should.have.property('_id', genId);
               done();
             });
-        }, 1);
+        }, 10);
       });
   });
 });
