@@ -35,6 +35,38 @@ var Application = (function() {
     }
   });
 
+  var AddedUser = React.createClass({
+    render: function() {
+      var Glyphicon = ReactBootstrap.Glyphicon;
+      var Button = ReactBootstrap.Button;
+      var ButtonGroup = ReactBootstrap.ButtonGroup;
+      var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+      return (
+        <ButtonToolbar>
+          <ButtonGroup>
+            <Button>{this.props.name}</Button><Button><Glyphicon glyph='remove' /></Button>
+          </ButtonGroup>
+        </ButtonToolbar>
+      );
+    }
+  });
+
+  var AddedUsers = React.createClass({
+    render: function() {
+      var Input = ReactBootstrap.Input;
+      var addedUsers = this.props.users.map(function (user) {
+        return (
+          <AddedUser name={user.name} email={user.email} />
+        );
+      });
+      return (
+          <div className='added-users' >
+            {addedUsers}
+          </div>
+      );
+    }
+  });
+
   var Application = React.createClass({
     getInitialState: function() {
       return {
@@ -69,7 +101,9 @@ var Application = (function() {
         dataType: 'json',
         success: function(data) {
           if (data && data.user) {
-            _this.setState(_this.state.users.concat(data.user));
+            _this.setState({
+              users: _this.state.users.concat(data.user)
+            });
           }
         },
         failure: function(errMsg) {
@@ -89,6 +123,7 @@ var Application = (function() {
           </Navbar>
           <div className='container'>
             <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput} onSubmit={this.createUser} />
+            <AddedUsers users={this.state.users} />
           </div>
         </div>
       );
