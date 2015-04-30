@@ -122,13 +122,13 @@ var Application = (function() {
     removeUser: function(email) {
       var i;
       var removedUsers = false;
-      for(i = 0; i < this.state.users.length; i++) {
-        if(this.state.users[i].email === email) {
+      for (i = 0; i < this.state.users.length; i++) {
+        if (this.state.users[i].email === email) {
           removedUsers = this.state.users.splice(i, 1);
           break;
         }
       }
-      if(removedUsers) {
+      if (removedUsers) {
         this.setState({
           users: this.state.users,
           previousUsers: removedUsers.concat(this.state.previousUsers)
