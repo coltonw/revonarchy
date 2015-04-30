@@ -36,6 +36,10 @@ var Application = (function() {
   });
 
   var AddedUser = React.createClass({
+    onRemove: function() {
+      this.props.onRemove(this.props.email);
+    },
+
     render: function() {
       var Glyphicon = ReactBootstrap.Glyphicon;
       var Button = ReactBootstrap.Button;
@@ -44,7 +48,7 @@ var Application = (function() {
       return (
         <ButtonToolbar>
           <ButtonGroup>
-            <Button>{this.props.name}</Button><Button><Glyphicon glyph='remove' /></Button>
+            <Button>{this.props.name}</Button><Button onClick={this.onRemove}><Glyphicon glyph='remove' /></Button>
           </ButtonGroup>
         </ButtonToolbar>
       );
@@ -54,9 +58,10 @@ var Application = (function() {
   var AddedUsers = React.createClass({
     render: function() {
       var Input = ReactBootstrap.Input;
+      var _this = this;
       var addedUsers = this.props.users.map(function (user) {
         return (
-          <AddedUser name={user.name} email={user.email} />
+          <AddedUser name={user.name} email={user.email} onRemove={_this.props.onRemove} />
         );
       });
       return (
@@ -74,7 +79,8 @@ var Application = (function() {
           email: '',
           name: ''
         },
-        users: []
+        users: [],
+        previousUsers: []
       };
     },
 
@@ -113,6 +119,23 @@ var Application = (function() {
       event.preventDefault();
     },
 
+    removeUser: function(email) {
+      var i;
+      var removedUsers = false;
+      for(i = 0; i < this.state.users.length; i++) {
+        if(this.state.users[i].email === email) {
+          removedUsers = this.state.users.splice(i, 1);
+          break;
+        }
+      }
+      if(removedUsers) {
+        this.setState({
+          users: this.state.users,
+          previousUsers: removedUsers.concat(this.state.previousUsers)
+        });
+      }
+    },
+
     render: function() {
       var Navbar = ReactBootstrap.Navbar;
       var PageHeader = ReactBootstrap.PageHeader;
@@ -123,7 +146,7 @@ var Application = (function() {
           </Navbar>
           <div className='container'>
             <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput} onSubmit={this.createUser} />
-            <AddedUsers users={this.state.users} />
+            <AddedUsers users={this.state.users} onRemove={this.removeUser} />
           </div>
         </div>
       );
