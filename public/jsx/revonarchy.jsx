@@ -8,6 +8,16 @@ var Application = (function() {
       );
     },
 
+    emailValidationState: function() {
+      var email = this.props.getFormState().email;
+      var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+      if (re.test(email)) {
+        return 'success';
+      } else {
+        return 'error';
+      }
+    },
+
     render: function() {
       var Input = ReactBootstrap.Input;
       return (
@@ -18,6 +28,8 @@ var Application = (function() {
             placeholder='Enter email'
             label='Email Address'
             value={this.props.email}
+            bsStyle={this.emailValidationState()}
+            hasFeedback
             onChange={this.handleChange}
             ref='userEmailTextInput'
           />
@@ -136,6 +148,10 @@ var Application = (function() {
       }
     },
 
+    getFormState: function() {
+      return this.state.createUser;
+    },
+
     render: function() {
       var Navbar = ReactBootstrap.Navbar;
       var PageHeader = ReactBootstrap.PageHeader;
@@ -145,7 +161,8 @@ var Application = (function() {
             <h1>REVONARCHY <small>Who will rule this day?</small></h1>
           </Navbar>
           <div className='container'>
-            <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput} onSubmit={this.createUser} />
+            <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput}
+                onSubmit={this.createUser} getFormState={this.getFormState} />
             <AddedUsers users={this.state.users} onRemove={this.removeUser} />
           </div>
         </div>
