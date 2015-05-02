@@ -24,7 +24,7 @@ var Application = (function() {
         <form onSubmit={this.props.onSubmit} >
           <h3>Add comrades who could be chosen as <span className='revonarch-red'>Revonarch</span></h3>
           <Input
-            type='text'
+            type='email'
             placeholder='Enter email'
             label='Email Address'
             value={this.props.email}
