@@ -9,34 +9,39 @@ var mongoose = require('mongoose');
 var request = require('supertest');
 var app = require('../app');
 
-// ensure the NODE_ENV is set to 'test'
-// this is helpful when you would like to change behavior when testing
-process.env.NODE_ENV = 'test';
-
 beforeEach(function (done) {
 
   var clearDB = function () {
-    for (var i in mongoose.connection.collections) {
-      mongoose.connection.collections[i].remove(function() {});
+    var collId;
+    var dropPromises = [];
+
+    var dropCollection = function(collection) {
+      return new Promise(function(resolve, reject) {
+        collection.drop(function(err) {
+          // test should move on, ignore the errors here for now
+          resolve();
+        });
+      });
+    };
+
+    for (collId in mongoose.connection.collections) {
+      dropPromises.push(dropCollection(mongoose.connection.collections[collId]));
     }
-    return done();
+    return Promise.all(dropPromises).then(function() {
+      done();
+    });
   };
 
   if (mongoose.connection.readyState === 0) {
-    mongoose.connect(config.mongoUri, function (err) {
+    mongoose.connect(config.mongoUri, function(err) {
       if (err) {
         throw err;
       }
-      return clearDB();
+      clearDB();
     });
   } else {
-    return clearDB();
+    clearDB();
   }
-});
-
-afterEach(function (done) {
-  mongoose.disconnect();
-  return done();
 });
 
 exports.testPost = function (route, body) {
