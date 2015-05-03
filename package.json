@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/coltonw/revonarchy",
   "dependencies": {
-    "koa": "^0.19.1",
-    "koa-middlewares": "^2.1.0",
+    "koa": "^0.20.0",
+    "koa-middlewares": "^3.0.1",
     "mongoose": "^4.0.0",
     "node-uuid": "^1.4.3"
   },
