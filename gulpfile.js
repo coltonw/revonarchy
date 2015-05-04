@@ -8,7 +8,7 @@ var concat = require('gulp-concat');
 var react = require('gulp-react');
 
 gulp.task('clean', function (cb) {
-  del(['public/css', 'public/javascript'], cb);
+  del(['public/css', 'public/javascript', 'public/fonts'], cb);
 });
 
 gulp.task('less', ['clean'], function () {
@@ -17,7 +17,12 @@ gulp.task('less', ['clean'], function () {
     .pipe(gulp.dest('public/css'));
 });
 
-gulp.task('build:css', ['less'], function () {
+gulp.task('fonts', ['clean'], function () {
+  return gulp.src('node_modules/bootstrap/fonts/**')
+    .pipe(gulp.dest('public/fonts'));
+});
+
+gulp.task('build:css', ['less', 'fonts'], function () {
   return gulp.src('public/css/**/*.css')
     .pipe(concat('style.css'))
     .pipe(gulp.dest('public/css'));

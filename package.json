@@ -22,8 +22,7 @@
   "dependencies": {
     "koa": "^0.20.0",
     "koa-middlewares": "^3.0.1",
-    "mongoose": "^4.0.0",
-    "node-uuid": "^1.4.3"
+    "mongoose": "^4.0.0"
   },
   "engines": {
     "iojs": "1.6.1"
