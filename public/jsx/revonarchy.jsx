@@ -18,6 +18,18 @@ var Application = (function() {
       }
     },
 
+    namePattern: ".{1,200}",
+
+    nameValidationState: function() {
+      var name = this.props.getFormState().name;
+      var re = new RegExp(this.namePattern);
+      if (re.test(name)) {
+        return 'success';
+      } else {
+        return 'error';
+      }
+    },
+
     render: function() {
       var Input = ReactBootstrap.Input;
       return (
@@ -38,6 +50,9 @@ var Application = (function() {
             placeholder='Enter Nickname'
             label='Nickname'
             value={this.props.name}
+            required
+            maxlength='200'
+            bsStyle={this.nameValidationState()}
             onChange={this.handleChange}
             ref='userNameInput'
           />
