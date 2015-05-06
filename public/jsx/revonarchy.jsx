@@ -18,7 +18,7 @@ var Application = (function() {
       }
     },
 
-    namePattern: ".{1,200}",
+    namePattern: '.{1,200}',
 
     nameValidationState: function() {
       var name = this.props.getFormState().name;
@@ -51,8 +51,9 @@ var Application = (function() {
             label='Nickname'
             value={this.props.name}
             required
-            maxlength='200'
+            maxLength='200'
             bsStyle={this.nameValidationState()}
+            hasFeedback
             onChange={this.handleChange}
             ref='userNameInput'
           />
@@ -88,13 +89,28 @@ var Application = (function() {
       var _this = this;
       var addedUsers = this.props.users.map(function (user) {
         return (
-          <AddedUser name={user.name} email={user.email} onRemove={_this.props.onRemove} />
+          <AddedUser key={user.email} name={user.name} email={user.email} onRemove={_this.props.onRemove} />
         );
       });
       return (
           <div className='added-users' >
             {addedUsers}
           </div>
+      );
+    }
+  });
+
+  var FinalizeGroup = React.createClass({
+    render: function() {
+      var Button = ReactBootstrap.Button;
+      var ButtonGroup = ReactBootstrap.ButtonGroup;
+      var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+      return (
+        <ButtonToolbar>
+          <ButtonGroup>
+            <Button bsStyle='primary' bsSize='large' onClick={this.props.onFinalize}>Finalize Comrades</Button>
+          </ButtonGroup>
+        </ButtonToolbar>
       );
     }
   });
@@ -167,6 +183,11 @@ var Application = (function() {
       return this.state.createUser;
     },
 
+    finalizeGroup: function() {
+      console.dir(this.state.users);
+      alert('Finalized!!!');
+    },
+
     render: function() {
       var Navbar = ReactBootstrap.Navbar;
       var PageHeader = ReactBootstrap.PageHeader;
@@ -179,6 +200,7 @@ var Application = (function() {
             <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput}
                 onSubmit={this.createUser} getFormState={this.getFormState} />
             <AddedUsers users={this.state.users} onRemove={this.removeUser} />
+            <FinalizeGroup onFinalize={this.finalizeGroup} />
           </div>
         </div>
       );

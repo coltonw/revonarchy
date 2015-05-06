@@ -32,8 +32,12 @@
 @import "@{bootstrap-less-dir}/utilities.less";
 @import "@{bootstrap-less-dir}/responsive-utilities.less";
 
+@small-margin-vertical:    10px;
+@standard-margin-vertical: 15px;
+
 .navbar h1 {
-  margin-top: 10px;
+  margin-top: @navbar-padding-vertical;
+  margin-bottom: @navbar-padding-vertical;
 }
 
 h1, .revonarch-red {
@@ -41,7 +45,11 @@ h1, .revonarch-red {
 }
 
 .added-users .btn-toolbar+.btn-toolbar {
-  margin-top: 10px;
+  margin-top: @small-margin-vertical;
+}
+
+.added-users .btn-toolbar:last-child {
+  margin-bottom: @standard-margin-vertical;
 }
 
 // Coloring the label I don't like on the dark background,
