@@ -76,7 +76,8 @@ var Application = (function() {
       return (
         <ButtonToolbar>
           <ButtonGroup>
-            <Button>{this.props.name}</Button><Button onClick={this.onRemove}><Glyphicon glyph='remove' /></Button>
+            <Button disabled={this.props.finalized}>{this.props.name}</Button>
+            <Button onClick={this.onRemove} disabled={this.props.finalized}><Glyphicon glyph='remove' /></Button>
           </ButtonGroup>
         </ButtonToolbar>
       );
@@ -89,7 +90,8 @@ var Application = (function() {
       var _this = this;
       var addedUsers = this.props.users.map(function (user) {
         return (
-          <AddedUser key={user.email} name={user.name} email={user.email} onRemove={_this.props.onRemove} />
+          <AddedUser key={user.email} name={user.name} email={user.email} onRemove={_this.props.onRemove}
+            finalized={_this.props.finalized} />
         );
       });
       return (
@@ -105,10 +107,19 @@ var Application = (function() {
       var Button = ReactBootstrap.Button;
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+      var bsStyle;
+      if(this.props.ready) {
+        bsStyle = 'primary';
+      } else {
+        bsStyle = 'default';
+      }
       return (
         <ButtonToolbar>
           <ButtonGroup>
-            <Button bsStyle='primary' bsSize='large' onClick={this.props.onFinalize}>Finalize Comrades</Button>
+            <Button bsStyle={bsStyle} bsSize='large' onClick={this.props.onFinalize}
+                disabled={this.props.disabled}>
+              Finalize Comrades
+            </Button>
           </ButtonGroup>
         </ButtonToolbar>
       );
@@ -123,6 +134,7 @@ var Application = (function() {
           name: ''
         },
         users: [],
+        finalized: false,
         previousUsers: []
       };
     },
@@ -184,23 +196,33 @@ var Application = (function() {
     },
 
     finalizeGroup: function() {
-      console.dir(this.state.users);
-      alert('Finalized!!!');
+      this.setState({
+        finalized: true
+      });
     },
 
     render: function() {
       var Navbar = ReactBootstrap.Navbar;
       var PageHeader = ReactBootstrap.PageHeader;
+      var createUser;
+      if(this.state.finalized) {
+        createUserForm = '';
+      } else {
+        createUserForm = (
+          <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput}
+              onSubmit={this.createUser} getFormState={this.getFormState} />
+        );
+      }
       return (
         <div>
           <Navbar staticTop={true}>
             <h1>REVONARCHY <small>Who will rule this day?</small></h1>
           </Navbar>
           <div className='container'>
-            <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput}
-                onSubmit={this.createUser} getFormState={this.getFormState} />
-            <AddedUsers users={this.state.users} onRemove={this.removeUser} />
-            <FinalizeGroup onFinalize={this.finalizeGroup} />
+            {createUserForm}
+            <AddedUsers users={this.state.users} onRemove={this.removeUser} finalized={this.state.finalized} />
+            <FinalizeGroup onFinalize={this.finalizeGroup} disabled={this.state.finalized || this.state.users.length < 2}
+                ready={this.state.users.length >= 2}/>
           </div>
         </div>
       );
