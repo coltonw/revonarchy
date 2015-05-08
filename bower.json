@@ -12,7 +12,7 @@
     "node_modules",
     "bower_components"
   ],
-  "devDependencies": {
+  "dependencies": {
     "react-bootstrap": "^0.21.2"
   }
 }

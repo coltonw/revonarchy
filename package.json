@@ -22,7 +22,8 @@
   "dependencies": {
     "koa": "^0.20.0",
     "koa-middlewares": "^3.0.1",
-    "mongoose": "^4.0.0"
+    "mongoose": "^4.0.0",
+    "bootstrap": "^3.3.4"
   },
   "engines": {
     "iojs": "1.6.1"
@@ -44,7 +45,6 @@
     "gulp-uglify": "^1.1.0",
     "gulp-concat": "^2.5.2",
     "gulp-util": "^3.0.4",
-    "gulp-react": "^3.0.1",
-    "bootstrap": "^3.3.4"
+    "gulp-react": "^3.0.1"
   }
 }
