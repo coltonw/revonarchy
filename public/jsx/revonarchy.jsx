@@ -135,7 +135,8 @@ var Application = (function() {
         },
         users: [],
         finalized: false,
-        previousUsers: []
+        previousUsers: [],
+        group: null
       };
     },
 
@@ -196,8 +197,28 @@ var Application = (function() {
     },
 
     finalizeGroup: function() {
+      var _this = this;
       this.setState({
         finalized: true
+      });
+
+      $.ajax('/group', {
+        method: 'post',
+        data: JSON.stringify({
+          users: this.state.users
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function(data) {
+          if (data && data.group) {
+            _this.setState({
+              group: data.group
+            });
+          }
+        },
+        failure: function(errMsg) {
+          //TODO Handle this error
+        }
       });
     },
 
