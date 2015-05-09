@@ -9,7 +9,7 @@ var Application = (function() {
     },
 
     emailValidationState: function() {
-      var email = this.props.getFormState().email;
+      var email = this.props.formState.email;
       var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
       if (re.test(email)) {
         return 'success';
@@ -21,7 +21,7 @@ var Application = (function() {
     namePattern: '.{1,200}',
 
     nameValidationState: function() {
-      var name = this.props.getFormState().name;
+      var name = this.props.formState.name;
       var re = new RegExp(this.namePattern);
       if (re.test(name)) {
         return 'success';
@@ -114,14 +114,46 @@ var Application = (function() {
         bsStyle = 'default';
       }
       return (
-        <ButtonToolbar>
-          <ButtonGroup>
-            <Button bsStyle={bsStyle} bsSize='large' onClick={this.props.onFinalize}
-                disabled={this.props.disabled}>
-              Finalize Comrades
-            </Button>
-          </ButtonGroup>
-        </ButtonToolbar>
+        <Button bsStyle={bsStyle} bsSize='large' onClick={this.props.onFinalize}
+            disabled={this.props.disabled} block>
+          Finalize Comrades
+        </Button>
+      );
+    }
+  });
+
+  var Revonarch = React.createClass({
+    render: function() {
+      var Button = ReactBootstrap.Button;
+      var ButtonGroup = ReactBootstrap.ButtonGroup;
+      var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+      var bsStyle;
+      if(this.props.disabled) {
+        bsStyle = 'default';
+      } else {
+        bsStyle = 'primary';
+      }
+      var revonarch = this.props.parentState.revonarch;
+      var revonarchSection = '';
+      if (revonarch) {
+        if (revonarch.name) {
+          revonarchSection = (
+            <h1>All hail the Revonarch {revonarch.name}!</h1>
+          );
+        } else if (revonarch.email) {
+          revonarchSection = (
+            <h1>All hail the Revonarch {revonarch.email}!</h1>
+          );
+        }
+      }
+      return (
+        <div className={'revonarch-section'}>
+          <Button bsStyle={bsStyle} bsSize='large' onClick={this.props.onRevonarch}
+              disabled={this.props.disabled} block>
+            {'Select the Revonarch'}
+          </Button>
+          {revonarchSection}
+        </div>
       );
     }
   });
@@ -136,7 +168,9 @@ var Application = (function() {
         users: [],
         finalized: false,
         previousUsers: [],
-        group: null
+        group: null,
+        groupFetched: false,
+        revonarch: null
       };
     },
 
@@ -192,10 +226,6 @@ var Application = (function() {
       }
     },
 
-    getFormState: function() {
-      return this.state.createUser;
-    },
-
     finalizeGroup: function() {
       var _this = this;
       this.setState({
@@ -210,9 +240,36 @@ var Application = (function() {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         success: function(data) {
-          if (data && data.group) {
+          if (data && typeof data.group !== 'undefined') {
             _this.setState({
-              group: data.group
+              group: data.group,
+              groupFetched: true
+            });
+          }
+        },
+        failure: function(errMsg) {
+          //TODO Handle this error better
+          _this.setState({
+            finalized: false
+          });
+        }
+      });
+    },
+
+    revonarch: function() {
+      var _this = this;
+
+      $.ajax('/revonarch', {
+        method: 'post',
+        data: JSON.stringify({
+          users: this.state.users
+        }),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function(data) {
+          if (data && data.revonarch) {
+            _this.setState({
+              revonarch: data.revonarch
             });
           }
         },
@@ -230,8 +287,12 @@ var Application = (function() {
         createUserForm = '';
       } else {
         createUserForm = (
-          <CreateUser email={this.state.email} name={this.state.name} onUserInput={this.onUserInput}
-              onSubmit={this.createUser} getFormState={this.getFormState} />
+          <CreateUser
+              email={this.state.email}
+              name={this.state.name}
+              onUserInput={this.onUserInput}
+              onSubmit={this.createUser}
+              formState={this.state.createUser} />
         );
       }
       return (
@@ -241,9 +302,18 @@ var Application = (function() {
           </Navbar>
           <div className='container'>
             {createUserForm}
-            <AddedUsers users={this.state.users} onRemove={this.removeUser} finalized={this.state.finalized} />
-            <FinalizeGroup onFinalize={this.finalizeGroup} disabled={this.state.finalized || this.state.users.length < 2}
-                ready={this.state.users.length >= 2}/>
+            <AddedUsers
+                users={this.state.users}
+                onRemove={this.removeUser}
+                finalized={this.state.finalized} />
+            <FinalizeGroup
+                onFinalize={this.finalizeGroup}
+                disabled={this.state.finalized || this.state.users.length < 2}
+                ready={this.state.users.length >= 2} />
+            <Revonarch
+                onRevonarch={this.revonarch}
+                parentState={this.state}
+                disabled={!this.state.groupFetched} />
           </div>
         </div>
       );
