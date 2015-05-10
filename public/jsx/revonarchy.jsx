@@ -262,7 +262,8 @@ var Application = (function() {
       $.ajax('/revonarch', {
         method: 'post',
         data: JSON.stringify({
-          users: this.state.users
+          users: this.state.users,
+          group: this.state.group
         }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
