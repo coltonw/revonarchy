@@ -63,6 +63,16 @@ var Application = (function() {
     }
   });
 
+  var userDisplay = function(user) {
+    if (user.name && user.name.length > 0) {
+      return user.name;
+    } else if (user.email && user.email.length > 0){
+      return user.email;
+    } else {
+      return 'Mystery Man';
+    }
+  };
+
   var AddedUser = React.createClass({
     onRemove: function() {
       this.props.onRemove(this.props.email);
@@ -73,14 +83,18 @@ var Application = (function() {
       var Button = ReactBootstrap.Button;
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
-      return (
-        <ButtonToolbar>
-          <ButtonGroup>
-            <Button disabled={this.props.finalized}>{this.props.name}</Button>
-            <Button onClick={this.onRemove} disabled={this.props.finalized}><Glyphicon glyph='remove' /></Button>
-          </ButtonGroup>
-        </ButtonToolbar>
-      );
+      if (!this.props.finalized) {
+        return (
+          <ButtonToolbar>
+            <ButtonGroup>
+              <Button disabled={this.props.finalized}>{userDisplay(this.props)}</Button>
+              <Button onClick={this.onRemove} disabled={this.props.finalized}><Glyphicon glyph='remove' /></Button>
+            </ButtonGroup>
+          </ButtonToolbar>
+        );
+      } else {
+        return <li>{userDisplay(this.props)}</li>;
+      }
     }
   });
 
@@ -94,11 +108,19 @@ var Application = (function() {
             finalized={_this.props.finalized} />
         );
       });
-      return (
+      if (!this.props.finalized) {
+        return (
           <div className='added-users' >
             {addedUsers}
           </div>
-      );
+        );
+      } else {
+        return (
+          <ul className='added-users' >
+            {addedUsers}
+          </ul>
+        );
+      }
     }
   });
 
@@ -108,7 +130,7 @@ var Application = (function() {
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
       var bsStyle;
-      if (this.props.ready) {
+      if (!this.props.disabled) {
         bsStyle = 'primary';
       } else {
         bsStyle = 'default';
@@ -136,18 +158,12 @@ var Application = (function() {
       var revonarch = this.props.parentState.revonarch;
       var revonarchSection = '';
       if (revonarch) {
-        if (revonarch.name) {
-          revonarchSection = (
-            <h1>All hail the Revonarch {revonarch.name}!</h1>
-          );
-        } else if (revonarch.email) {
-          revonarchSection = (
-            <h1>All hail the Revonarch {revonarch.email}!</h1>
-          );
-        }
+        revonarchSection = (
+          <h2 className='hail-revonarch'>All hail the Revonarch <span className='revonarch-red'>{userDisplay(revonarch)}</span>!</h2>
+        );
       }
       return (
-        <div className={'revonarch-section'}>
+        <div className='revonarch-section'>
           <Button bsStyle={bsStyle} bsSize='large' onClick={this.props.onRevonarch}
               disabled={this.props.disabled} block>
             {'Select the Revonarch'}
@@ -284,8 +300,11 @@ var Application = (function() {
       var Navbar = ReactBootstrap.Navbar;
       var PageHeader = ReactBootstrap.PageHeader;
       var createUser;
+      var createUserForm;
+      var finalizeGroup;
       if (this.state.finalized) {
         createUserForm = '';
+        finalizeGroup = '';
       } else {
         createUserForm = (
           <CreateUser
@@ -294,6 +313,11 @@ var Application = (function() {
               onUserInput={this.onUserInput}
               onSubmit={this.createUser}
               formState={this.state.createUser} />
+        );
+        finalizeGroup = (
+          <FinalizeGroup
+              onFinalize={this.finalizeGroup}
+              disabled={this.state.users.length < 2} />
         );
       }
       return (
@@ -307,10 +331,7 @@ var Application = (function() {
                 users={this.state.users}
                 onRemove={this.removeUser}
                 finalized={this.state.finalized} />
-            <FinalizeGroup
-                onFinalize={this.finalizeGroup}
-                disabled={this.state.finalized || this.state.users.length < 2}
-                ready={this.state.users.length >= 2} />
+            {finalizeGroup}
             <Revonarch
                 onRevonarch={this.revonarch}
                 parentState={this.state}
