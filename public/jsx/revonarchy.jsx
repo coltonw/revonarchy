@@ -108,7 +108,7 @@ var Application = (function() {
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
       var bsStyle;
-      if(this.props.ready) {
+      if (this.props.ready) {
         bsStyle = 'primary';
       } else {
         bsStyle = 'default';
@@ -128,7 +128,7 @@ var Application = (function() {
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
       var bsStyle;
-      if(this.props.disabled) {
+      if (this.props.disabled) {
         bsStyle = 'default';
       } else {
         bsStyle = 'primary';
@@ -284,7 +284,7 @@ var Application = (function() {
       var Navbar = ReactBootstrap.Navbar;
       var PageHeader = ReactBootstrap.PageHeader;
       var createUser;
-      if(this.state.finalized) {
+      if (this.state.finalized) {
         createUserForm = '';
       } else {
         createUserForm = (
