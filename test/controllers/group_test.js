@@ -1,54 +1,9 @@
 var config = require('../../config');
 var request = require('supertest');
 var should = require('should');
-var co = require('co');
 var app = require('../../app');
 
-var QueueValue = require('../../models/queueValue');
-var Group = require('../../models/group');
-
 var utils = require('../utils');
-
-function createUsers(emailAddresses) {
-  var userPromises = [];
-  var i;
-  var usersArray = [];
-
-  for (i = 0; i < emailAddresses.length; i++) {
-    userPromises.push(utils.testPost('/user', {user:{email:emailAddresses[i]}}));
-  }
-  return Promise.all(userPromises).then(function(usersResults) {
-    for (i = 0; i < usersResults.length; i++) {
-      usersArray.push(usersResults[i].user);
-    }
-    return Promise.resolve(usersArray);
-  });
-}
-
-function setupGroup(emailAddresses) {
-  var i;
-  var usersArray = [];
-  var groupId;
-
-  return createUsers(emailAddresses).then(function(users) {
-    usersArray = users;
-    return QueueValue.create(usersArray[0]._id);
-  }).then(function(queueValue) {
-    groupId = queueValue.groupId;
-    var queueValuePromises = [];
-    for (i = 1; i < usersArray.length; i++) {
-      queueValuePromises.push(QueueValue.create(usersArray[i]._id, groupId));
-    }
-    return Promise.all(queueValuePromises);
-  }).then(function(queueValues) {
-    return co(Group.create(groupId, usersArray[0]._id));
-  }).then(function(group) {
-    return Promise.resolve({
-      group: group,
-      users: usersArray
-    });
-  });
-}
 
 describe('group controller', function() {
   it('should return a group with the revonarch after revonarch is called at least once', function(done) {
@@ -95,9 +50,9 @@ describe('group controller', function() {
     var smallGroupId;
 
     try {
-      setupGroup([emailAddress1, emailAddress2, emailAddress3]).then(function(groupInfo) {
+      utils.setupGroup([emailAddress1, emailAddress2, emailAddress3]).then(function(groupInfo) {
         bigGroupId = groupInfo.group._id;
-        return setupGroup([emailAddress1, emailAddress2]);
+        return utils.setupGroup([emailAddress1, emailAddress2]);
       }).then(function(groupInfo) {
         smallGroupId = groupInfo.group._id;
         smallGroupId.should.not.equal(bigGroupId);
@@ -123,10 +78,10 @@ describe('group controller', function() {
     var smallGroupUsers;
 
     try {
-      setupGroup([emailAddress1, emailAddress2]).then(function(groupInfo) {
+      utils.setupGroup([emailAddress1, emailAddress2]).then(function(groupInfo) {
         smallGroupId = groupInfo.group._id;
         smallGroupUsers = groupInfo.users;
-        return setupGroup([emailAddress1, emailAddress2, emailAddress3]);
+        return utils.setupGroup([emailAddress1, emailAddress2, emailAddress3]);
       }).then(function(groupInfo) {
         bigGroupId = groupInfo.group._id;
         bigGroupId.should.not.equal(smallGroupId);
@@ -163,9 +118,9 @@ describe('group controller', function() {
 
     try {
       matchingUsers.should.be.below(emailAddresses.length * config.minGroupPercent);
-      setupGroup(emailAddresses.slice(0, matchingUsers)).then(function(groupInfo) {
+      utils.setupGroup(emailAddresses.slice(0, matchingUsers)).then(function(groupInfo) {
         usersArray = groupInfo.users;
-        return createUsers(emailAddresses.slice(matchingUsers));
+        return utils.createUsers(emailAddresses.slice(matchingUsers));
       }).then(function(users) {
         usersArray = usersArray.concat(users);
         usersArray.should.have.property('length', emailAddresses.length);
@@ -203,10 +158,10 @@ describe('group controller', function() {
 
     try {
       matchingUsers.should.be.above(emailAddresses.length * config.minGroupPercent);
-      setupGroup(emailAddresses.slice(0, matchingUsers)).then(function(groupInfo) {
+      utils.setupGroup(emailAddresses.slice(0, matchingUsers)).then(function(groupInfo) {
         groupId = groupInfo.group._id;
         usersArray = groupInfo.users;
-        return createUsers(emailAddresses.slice(matchingUsers));
+        return utils.createUsers(emailAddresses.slice(matchingUsers));
       }).then(function(users) {
         usersArray = usersArray.concat(users);
         usersArray.should.have.property('length', emailAddresses.length);

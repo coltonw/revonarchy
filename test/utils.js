@@ -8,6 +8,10 @@ var config = require('../config');
 var mongoose = require('mongoose');
 var request = require('supertest');
 var app = require('../app');
+var co = require('co');
+
+var QueueValue = require('../models/queueValue');
+var Group = require('../models/group');
 
 beforeEach(function (done) {
 
@@ -44,7 +48,7 @@ beforeEach(function (done) {
   }
 });
 
-exports.testPost = function (route, body) {
+exports.testPost = function(route, body) {
   return new Promise(function(resolve, reject) {
     request(app)
       .post(route)
@@ -59,5 +63,46 @@ exports.testPost = function (route, body) {
           resolve(res.body);
         }
       });
+  });
+};
+
+exports.createUsers = function(emailAddresses) {
+  var userPromises = [];
+  var i;
+  var usersArray = [];
+
+  for (i = 0; i < emailAddresses.length; i++) {
+    userPromises.push(exports.testPost('/user', {user:{email:emailAddresses[i]}}));
+  }
+  return Promise.all(userPromises).then(function(usersResults) {
+    for (i = 0; i < usersResults.length; i++) {
+      usersArray.push(usersResults[i].user);
+    }
+    return Promise.resolve(usersArray);
+  });
+};
+
+exports.setupGroup = function(emailAddresses) {
+  var i;
+  var usersArray = [];
+  var groupId;
+
+  return exports.createUsers(emailAddresses).then(function(users) {
+    usersArray = users;
+    return QueueValue.create(usersArray[0]._id);
+  }).then(function(queueValue) {
+    groupId = queueValue.groupId;
+    var queueValuePromises = [];
+    for (i = 1; i < usersArray.length; i++) {
+      queueValuePromises.push(QueueValue.create(usersArray[i]._id, groupId));
+    }
+    return Promise.all(queueValuePromises);
+  }).then(function(queueValues) {
+    return co(Group.create(groupId, usersArray[0]._id));
+  }).then(function(group) {
+    return Promise.resolve({
+      group: group,
+      users: usersArray
+    });
   });
 };
