@@ -48,19 +48,39 @@ beforeEach(function (done) {
   }
 });
 
-exports.testPost = function(route, body) {
+exports.testPost = function(route, body, expectedStatus) {
+  expectedStatus = expectedStatus || 200;
   return new Promise(function(resolve, reject) {
     request(app)
       .post(route)
       .send(body)
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
-      .expect(200)
+      .expect(expectedStatus)
       .end(function(err, res) {
         if (err) {
-          reject();
+          reject(err);
         } else {
           resolve(res.body);
+        }
+      });
+  });
+};
+
+exports.testPostFailure = function(route, body, expectedStatus) {
+  expectedStatus = expectedStatus || 500;
+  return new Promise(function(resolve, reject) {
+    request(app)
+      .post(route)
+      .send(body)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /text/)
+      .expect(expectedStatus)
+      .end(function(err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
         }
       });
   });

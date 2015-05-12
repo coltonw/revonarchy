@@ -24,6 +24,9 @@ exports.revonarch = function *() {
   var groupId = groupReq ? groupReq._id : null;
   var revonarch;
 
+  // Behavior we want is that submitting an old group result does not change anything,
+  // it just throws an error
+
   if ((groupReq !== null && expectedGroup !== null && !groupReq._id.equals(expectedGroup._id)) &&
       (groupReq !== null ||  expectedGroup !== null)) {
     throw new Error('Group does not match expected group.');
@@ -80,6 +83,10 @@ exports.revonarch = function *() {
     tmpValue = yield Group.updateRevonarch(groupReq);
   } else {
     tmpValue = yield Group.create(groupId, revonarch._id);
+  }
+  if (tmpValue === null) {
+    // If setting the Revonarch fails, we throw an error
+    throw new Error('Group does not match expected group.');
   }
   tmpValue = queueValues[queueValues.length - 1].queueValue;
   for (i = queueValues.length - 1; i > 0; i--) {

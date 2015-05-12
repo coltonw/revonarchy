@@ -46,4 +46,35 @@ describe('queue controller', function() {
       done(e);
     }
   });
+
+  it('should throw an error if the call is made twice in a row', function(done) {
+    var emailAddresses = [
+      'coltonw@gmail.com',
+      'coltonw[thistimewithfeeling]@gmail.com'
+    ];
+    var groupInfo;
+    var revonarchFirstTime;
+
+    try {
+      utils.setupGroup(emailAddresses).then(function(info) {
+        groupInfo = info;
+        return utils.testPost('/revonarch', {users: groupInfo.users, group: groupInfo.group});
+      }).then(function(revonarchResult) {
+        revonarchResult.should.have.property('revonarch');
+        revonarchResult.revonarch.should.have.property('_id');
+        revonarchFirstTime = revonarchResult.revonarch;
+        return utils.testPostFailure('/revonarch', {users: groupInfo.users, group: groupInfo.group}, 500);
+      }).then(function(revonarchResult2) {
+        // testPostFailure checks the status, nothing to test here.
+        done();
+      }).catch(function(e) {
+        // While we want an "error" this is if there is an error in our test
+        // AKA a test failure
+        e = e || new Error('Promise had a rejection with no error');
+        done(e);
+      });
+    } catch (e) {
+      done(e);
+    }
+  });
 });
