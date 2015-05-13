@@ -10,18 +10,8 @@ exports.get = function(id) {
   return User.findById(id).exec();
 };
 
-// TODO Possible race condition?
-// Just make the method call a PUT and make this an upsert
-exports.insert = function *(user) {
+exports.upsert = function *(user) {
   if (!user || !user.email) return new Error('User with email address required');
-  var existingUser = yield exports.getByEmail(user.email);
-  var newUser;
-
-  // ExistingUser will be null if no document was matched
-  if (existingUser) {
-    return existingUser;
-  } else {
-    newUser = new User(user);
-    return newUser.save();
-  }
+  delete user._id;
+  return User.findOneAndUpdate({email: user.email}, user, {new: true, upsert: true}).exec();
 };

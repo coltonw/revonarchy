@@ -12,7 +12,6 @@ var group = require('./controllers/group');
 module.exports = function routes(app) {
   app.get('/', home);
 
-  app.get('/user/email/:email', user.get);
   app.post('/user', user.create);
 
   app.post('/group', group.chooseGroupRoute);

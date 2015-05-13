@@ -10,7 +10,7 @@ var User = require('../models/user');
 
 exports.create = function *() {
   var user = this.request.body.user;
-  var newUser = yield User.insert(user);
+  var newUser = yield User.upsert(user);
   this.body = {user: newUser};
 };
 
