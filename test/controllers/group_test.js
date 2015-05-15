@@ -41,6 +41,34 @@ describe('group controller', function() {
       done(e);
     }
   });
+    it('should return a group whenever a group is asked for', function(done) {
+      var emailAddress1 = 'coltonw@gmail.com';
+      var emailAddress2 = 'coltonw[thistimewithfeeling]@gmail.com';
+      var usersArray = [];
+      var revonarch1;
+
+      try {
+        Promise.all([
+          utils.testPost('/user', {user:{email:emailAddress1}}),
+          utils.testPost('/user', {user:{email:emailAddress2}})
+        ]).then(function(usersResults) {
+          var i;
+          for (i = 0; i < usersResults.length; i++) {
+            usersArray.push(usersResults[i].user);
+          }
+          return utils.testPost('/group', {users:usersArray});
+        }).then(function(groupResults) {
+          groupResults.should.not.have.property('group', null);
+          groupResults.group.should.have.property('_id');
+          done();
+        }).catch(function(e) {
+          e = e || new Error('Promise had a rejection with no error');
+          done(e);
+        });
+      } catch (e) {
+        done(e);
+      }
+    });
 
   it('should return the smallest group when the users are part of multiple groups', function(done) {
     var emailAddress1 = 'coltonw@gmail.com';
@@ -98,7 +126,7 @@ describe('group controller', function() {
     }
   });
 
-  it('should return null group when there are fewer matching users than the minimum percent', function(done) {
+  it('should return new group when there are fewer matching users than the minimum percent', function(done) {
     var emailAddresses = [
       'coltonw@gmail.com',
       'coltonw[1]@gmail.com',
@@ -114,11 +142,13 @@ describe('group controller', function() {
       'coltonw[11]@gmail.com'
     ];
     var usersArray;
+    var previousGroupId;
     var matchingUsers = 3;
 
     try {
       matchingUsers.should.be.below(emailAddresses.length * config.minGroupPercent);
       utils.setupGroup(emailAddresses.slice(0, matchingUsers)).then(function(groupInfo) {
+        previousGroupId = groupInfo.group._id;
         usersArray = groupInfo.users;
         return utils.createUsers(emailAddresses.slice(matchingUsers));
       }).then(function(users) {
@@ -126,7 +156,9 @@ describe('group controller', function() {
         usersArray.should.have.property('length', emailAddresses.length);
         return utils.testPost('/group', {users: usersArray});
       }).then(function(groupResults) {
-        groupResults.should.have.property('group', null);
+        groupResults.should.not.have.property('group', null);
+        groupResults.group.should.have.property('_id');
+        groupResults.group.should.not.have.property('_id', previousGroupId.toString());
         done();
       }).catch(function(e) {
         e = e || new Error('Promise had a rejection with no error');

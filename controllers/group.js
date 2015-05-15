@@ -15,15 +15,12 @@ var converter = require('../lib/mongooseHelpers');
 // by the smallest group being chosen first.
 // Behavior is undefined if the groups are the same size.
 exports.chooseGroup = function *(users) {
-  var userHash = {};
   var allQueueValues = {};
   var i;
   var userId;
 
   for (i = 0; i < users.length; i++) {
-    // We don't want to be using an ObjectId as a key in a hash
-    userId = users[i]._id.toString();
-    userHash[userId] = users[i];
+    userId = users[i]._id;
     allQueueValues[userId] = yield QueueValue.listByUser(userId);
   }
 
@@ -58,8 +55,21 @@ exports.chooseGroup = function *(users) {
   } else if (maxGroupCount >= config.minGroupSize &&
       maxGroupCount / numUsers >= config.minGroupPercent) {
     return yield getSmallestGroup(maxGroup);
+  } else {
+    var tmpQueueValue;
+    var groupId = null;
+    // Create a new group because no existing group matches
+    for (i = 0; i < users.length; i++) {
+      userId = users[i]._id;
+      tmpQueueValue = yield QueueValue.create(userId, groupId);
+
+      // In the case that the groupId was null, we need to reset the groupId
+      // based on the newly generated one.
+      groupId = tmpQueueValue.groupId;
+    }
+    return yield Group.create(groupId);
   }
-  return null;
+
 };
 
 exports.chooseGroupRoute = function *() {

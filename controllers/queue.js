@@ -18,49 +18,38 @@ exports.revonarch = function *() {
   var groupReq = converter.castIds(this.request.body.group);
   var expectedGroup = yield groupController.chooseGroup(users);
   var userHash = {};
-  var existingQueueValues = {};
   var i;
   var userId;
-  var groupId = groupReq ? groupReq._id : null;
+  var groupId;
   var revonarch;
 
   // Behavior we want is that submitting an old group result does not change anything,
   // it just throws an error
+
+  if (!groupReq || !groupReq._id) {
+    throw new Error('Must include an existing group.');
+  } else {
+    groupId = groupReq._id;
+  }
 
   if ((groupReq !== null && expectedGroup !== null && !groupReq._id.equals(expectedGroup._id)) &&
       (groupReq !== null ||  expectedGroup !== null)) {
     throw new Error('Group does not match expected group.');
   }
 
+  var queueValues = [];
+  var tmpQueueValue;
+
   // Get queue values for all users, or null for users new to the chosen group.
   for (i = 0; i < users.length; i++) {
-    // We don't want to user an ObjectId as a key in a map
+    // We don't want to use an ObjectId as a key in a map
     userId = users[i]._id.toString();
     userHash[userId] = users[i];
     if (groupId) {
-      existingQueueValues[userId] = yield QueueValue.get(userId, groupId);
+      tmpQueueValue = yield QueueValue.get(userId, groupId);
+      queueValues.push(tmpQueueValue);
     } else {
-      existingQueueValues[userId] = null;
-    }
-  }
-
-  var queueValues = [];
-  var tmpQueueValue;
-  var foundQueueValue;
-
-  // Creating new queue values for users new to the chosen group.
-  for (userId in existingQueueValues) {
-    if (existingQueueValues.hasOwnProperty(userId)) {
-      if (existingQueueValues[userId] !== null) {
-        queueValues.push(existingQueueValues[userId]);
-      } else {
-        tmpQueueValue = yield QueueValue.create(userId, groupId);
-        queueValues.push(tmpQueueValue);
-
-        // In the case that the groupId was null, we need to reset the groupId
-        // based on the newly generated one.
-        groupId = tmpQueueValue.groupId;
-      }
+      throw new Error('Missing queue value!');
     }
   }
 
@@ -78,12 +67,8 @@ exports.revonarch = function *() {
   var tmpValue;
 
   revonarch = userHash[queueValues[0].userId];
-  if (groupReq) {
-    groupReq.revonarch = revonarch._id;
-    tmpValue = yield Group.updateRevonarch(groupReq);
-  } else {
-    tmpValue = yield Group.create(groupId, revonarch._id);
-  }
+  groupReq.revonarchId = revonarch._id;
+  tmpValue = yield Group.updateRevonarch(groupReq);
   if (tmpValue === null) {
     // If setting the Revonarch fails, we throw an error
     throw new Error('Group does not match expected group.');

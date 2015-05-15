@@ -29,5 +29,5 @@ exports.updateRevonarch = function(group) {
   var previousVersion = group.__v;
   group.__v = group.__v + 1;
   return Group.findOneAndUpdate({_id: group._id, __v: previousVersion},
-      {revonarch: group.revonarch, __v: group.__v}, {new: true}).exec();
+      {revonarchId: group.revonarchId, __v: group.__v}, {new: true}).exec();
 };
