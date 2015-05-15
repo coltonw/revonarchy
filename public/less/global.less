@@ -50,12 +50,14 @@ h1, .revonarch-red {
   color: @revonarch-red;
 }
 
-.added-users .btn-toolbar+.btn-toolbar {
-  margin-top: @small-margin-vertical;
-}
+.added-users, .removed-users {
+  .btn-toolbar+.btn-toolbar {
+    margin-top: @small-margin-vertical;
+  }
 
-.added-users .btn-toolbar:last-child {
-  margin-bottom: @standard-margin-vertical;
+  .btn-toolbar:last-child {
+    margin-bottom: @standard-margin-vertical;
+  }
 }
 
 .revonarch-section {

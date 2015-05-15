@@ -100,8 +100,13 @@ var Application = (function() {
 
   var AddedUsers = React.createClass({
     render: function() {
-      var Input = ReactBootstrap.Input;
       var _this = this;
+      var header = '';
+      if (this.props.users.length > 0) {
+        header = (
+          <h3>Current Comrades</h3>
+        );
+      }
       var addedUsers = this.props.users.map(function (user) {
         return (
           <AddedUser key={user.email} name={user.name} email={user.email} onRemove={_this.props.onRemove}
@@ -111,6 +116,7 @@ var Application = (function() {
       if (!this.props.finalized) {
         return (
           <div className='added-users' >
+            {header}
             {addedUsers}
           </div>
         );
@@ -121,6 +127,47 @@ var Application = (function() {
           </ul>
         );
       }
+    }
+  });
+
+  var PreviousUser = React.createClass({
+    onAdd: function() {
+      this.props.onAdd(this.props.email);
+    },
+
+    render: function() {
+      var Glyphicon = ReactBootstrap.Glyphicon;
+      var Button = ReactBootstrap.Button;
+      var ButtonGroup = ReactBootstrap.ButtonGroup;
+      var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+      if (!this.props.finalized) {
+        return (
+          <ButtonToolbar>
+            <ButtonGroup>
+              <Button>{userDisplay(this.props)}</Button>
+              <Button onClick={this.onAdd}><Glyphicon glyph='plus' /></Button>
+            </ButtonGroup>
+          </ButtonToolbar>
+        );
+      } else {
+        return <li>{userDisplay(this.props)}</li>;
+      }
+    }
+  });
+
+  var PreviousUsers = React.createClass({
+    render: function() {
+      var _this = this;
+      var previousUsers = this.props.users.map(function (user) {
+        return (
+          <PreviousUser key={user.email} name={user.name} email={user.email} onAdd={_this.props.onAdd} />
+        );
+      });
+      return (
+        <div className='removed-users' >
+          {previousUsers}
+        </div>
+      );
     }
   });
 
@@ -174,16 +221,35 @@ var Application = (function() {
     }
   });
 
+  var getSavedUsers = function() {
+    var locallyStoredUsers;
+    try {
+      locallyStoredUsers = JSON.parse(localStorage.users);
+      if ($.isArray(locallyStoredUsers)) {
+        return locallyStoredUsers;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  };
+
+  var saveUsers = function(users) {
+    localStorage.users = JSON.stringify(users);
+  };
+
   var Application = React.createClass({
     getInitialState: function() {
+      var previousUsers = getSavedUsers();
       return {
         createUser: {
           email: '',
           name: ''
         },
         users: [],
+        previousUsers: previousUsers,
         finalized: false,
-        previousUsers: [],
         group: null,
         groupFetched: false,
         revonarch: null
@@ -200,6 +266,30 @@ var Application = (function() {
     },
 
     createUser: function(event) {
+      var addUserToArray = function(user, array) {
+        var i;
+        var existingUser = false;
+        for (i = 0; i < array.length; i++) {
+          if (array[i].email === user.email) {
+            existingUser = array.splice(i, 1, user);
+            break;
+          }
+        }
+        if (!existingUser) {
+          array.push(user);
+        }
+        return array;
+      };
+      var removeUserFromArray = function(user, array) {
+        var i;
+        for (i = 0; i < array.length; i++) {
+          if (array[i].email === user.email) {
+            array.splice(i, 1);
+            break;
+          }
+        }
+        return array;
+      };
       var _this = this;
       $.ajax('/user', {
         method: 'post',
@@ -212,10 +302,13 @@ var Application = (function() {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         success: function(data) {
+          var savedUsers = getSavedUsers();
           if (data && data.user) {
             _this.setState({
-              users: _this.state.users.concat(data.user)
+              users: addUserToArray(data.user, _this.state.users),
+              previousUsers: removeUserFromArray(data.user, _this.state.previousUsers)
             });
+            saveUsers(addUserToArray(data.user, savedUsers));
           }
         },
         failure: function(errMsg) {
@@ -223,6 +316,23 @@ var Application = (function() {
         }
       });
       event.preventDefault();
+    },
+
+    addUser: function(email) {
+      var i;
+      var addedUsers = false;
+      for (i = 0; i < this.state.previousUsers.length; i++) {
+        if (this.state.previousUsers[i].email === email) {
+          addedUsers = this.state.previousUsers.splice(i, 1);
+          break;
+        }
+      }
+      if (addedUsers) {
+        this.setState({
+          users: this.state.users.concat(addedUsers),
+          previousUsers: this.state.previousUsers
+        });
+      }
     },
 
     removeUser: function(email) {
@@ -237,7 +347,7 @@ var Application = (function() {
       if (removedUsers) {
         this.setState({
           users: this.state.users,
-          previousUsers: removedUsers.concat(this.state.previousUsers)
+          previousUsers: this.state.previousUsers.concat(removedUsers)
         });
       }
     },
@@ -307,12 +417,17 @@ var Application = (function() {
         finalizeGroup = '';
       } else {
         createUserForm = (
-          <CreateUser
-              email={this.state.email}
-              name={this.state.name}
-              onUserInput={this.onUserInput}
-              onSubmit={this.createUser}
-              formState={this.state.createUser} />
+          <div>
+            <CreateUser
+                email={this.state.email}
+                name={this.state.name}
+                onUserInput={this.onUserInput}
+                onSubmit={this.createUser}
+                formState={this.state.createUser} />
+            <PreviousUsers
+                users={this.state.previousUsers}
+                onAdd={this.addUser} />
+          </div>
         );
         finalizeGroup = (
           <FinalizeGroup
