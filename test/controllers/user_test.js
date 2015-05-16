@@ -36,6 +36,7 @@ describe('user controller', function() {
             fakeReq.body.should.have.property('user');
             fakeReq.body.user.should.have.property('email', emailAddress);
             fakeReq.body.user.should.have.property('_id');
+
             // Since we made the call directly instead of through the router
             // the _id returned is an ObjectId rather than a string
             fakeReq.body.user._id.toString().should.equal(genId);

@@ -56,9 +56,10 @@ exports.chooseGroup = function *(users) {
       maxGroupCount / numUsers >= config.minGroupPercent) {
     return yield getSmallestGroup(maxGroup);
   } else {
+
+    // Create a new group because no existing group matches
     var tmpQueueValue;
     var groupId = null;
-    // Create a new group because no existing group matches
     for (i = 0; i < users.length; i++) {
       userId = users[i]._id;
       tmpQueueValue = yield QueueValue.create(userId, groupId);

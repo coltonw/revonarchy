@@ -66,7 +66,7 @@ var Application = (function() {
   var userDisplay = function(user) {
     if (user.name && user.name.length > 0) {
       return user.name;
-    } else if (user.email && user.email.length > 0){
+    } else if (user.email && user.email.length > 0) {
       return user.email;
     } else {
       return 'Mystery Man';

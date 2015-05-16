@@ -41,34 +41,34 @@ describe('group controller', function() {
       done(e);
     }
   });
-    it('should return a group whenever a group is asked for', function(done) {
-      var emailAddress1 = 'coltonw@gmail.com';
-      var emailAddress2 = 'coltonw[thistimewithfeeling]@gmail.com';
-      var usersArray = [];
-      var revonarch1;
+  it('should return a group whenever a group is asked for', function(done) {
+    var emailAddress1 = 'coltonw@gmail.com';
+    var emailAddress2 = 'coltonw[thistimewithfeeling]@gmail.com';
+    var usersArray = [];
+    var revonarch1;
 
-      try {
-        Promise.all([
-          utils.testPost('/user', {user:{email:emailAddress1}}),
-          utils.testPost('/user', {user:{email:emailAddress2}})
-        ]).then(function(usersResults) {
-          var i;
-          for (i = 0; i < usersResults.length; i++) {
-            usersArray.push(usersResults[i].user);
-          }
-          return utils.testPost('/group', {users:usersArray});
-        }).then(function(groupResults) {
-          groupResults.should.not.have.property('group', null);
-          groupResults.group.should.have.property('_id');
-          done();
-        }).catch(function(e) {
-          e = e || new Error('Promise had a rejection with no error');
-          done(e);
-        });
-      } catch (e) {
+    try {
+      Promise.all([
+        utils.testPost('/user', {user:{email:emailAddress1}}),
+        utils.testPost('/user', {user:{email:emailAddress2}})
+      ]).then(function(usersResults) {
+        var i;
+        for (i = 0; i < usersResults.length; i++) {
+          usersArray.push(usersResults[i].user);
+        }
+        return utils.testPost('/group', {users:usersArray});
+      }).then(function(groupResults) {
+        groupResults.should.not.have.property('group', null);
+        groupResults.group.should.have.property('_id');
+        done();
+      }).catch(function(e) {
+        e = e || new Error('Promise had a rejection with no error');
         done(e);
-      }
-    });
+      });
+    } catch (e) {
+      done(e);
+    }
+  });
 
   it('should return the smallest group when the users are part of multiple groups', function(done) {
     var emailAddress1 = 'coltonw@gmail.com';
