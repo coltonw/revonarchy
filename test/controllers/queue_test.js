@@ -77,4 +77,51 @@ describe('queue controller', function() {
       done(e);
     }
   });
+
+  it('should throw an error if no group is given', function(done) {
+    var emailAddresses = [
+      'coltonw@gmail.com',
+      'coltonw[thistimewithfeeling]@gmail.com'
+    ];
+
+    try {
+      utils.setupGroup(emailAddresses).then(function(groupInfo) {
+        return utils.testPostFailure('/revonarch', {users: groupInfo.users, group: null}, 500);
+      }).then(function(revonarchResult) {
+        // testPostFailure checks the status, nothing to test here.
+        done();
+      }).catch(function(e) {
+        // While we want an "error" this is if there is an error in our test
+        // AKA a test failure
+        e = e || new Error('Promise had a rejection with no error');
+        done(e);
+      });
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it('should throw an error if wrong group is given', function(done) {
+    var emailAddresses = [
+      'coltonw@gmail.com',
+      'coltonw[thistimewithfeeling]@gmail.com'
+    ];
+    var fakeGroupId = '012345678901234567890123';
+
+    try {
+      utils.setupGroup(emailAddresses).then(function(groupInfo) {
+        return utils.testPostFailure('/revonarch', {users: groupInfo.users, group: {_id: fakeGroupId}}, 500);
+      }).then(function(revonarchResult) {
+        // testPostFailure checks the status, nothing to test here.
+        done();
+      }).catch(function(e) {
+        // While we want an "error" this is if there is an error in our test
+        // AKA a test failure
+        e = e || new Error('Promise had a rejection with no error');
+        done(e);
+      });
+    } catch (e) {
+      done(e);
+    }
+  });
 });

@@ -39,17 +39,13 @@ exports.revonarch = function *() {
   var queueValues = [];
   var tmpQueueValue;
 
-  // Get queue values for all users, or null for users new to the chosen group.
+  // Get queue values for all users
   for (i = 0; i < users.length; i++) {
     // We don't want to use an ObjectId as a key in a map
     userId = users[i]._id.toString();
     userHash[userId] = users[i];
-    if (groupId) {
-      tmpQueueValue = yield QueueValue.get(userId, groupId);
-      queueValues.push(tmpQueueValue);
-    } else {
-      throw new Error('Missing queue value!');
-    }
+    tmpQueueValue = yield QueueValue.get(userId, groupId);
+    queueValues.push(tmpQueueValue);
   }
 
   // Sort queue values from lowest to highest
