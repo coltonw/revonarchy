@@ -4,8 +4,8 @@
   "description": "System for choosing a decision maker.",
   "main": "app.js",
   "scripts": {
-    "test": "iojs ./node_modules/mocha/bin/_mocha test/controllers",
-    "report": "iojs ./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha test/controllers",
+    "test": "iojs ./node_modules/mocha/bin/_mocha test/controllers test/models",
+    "report": "iojs ./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha test/controllers test/models",
     "style": "jscs --esnext .",
     "jsxStyle": "jscs --esprima=esprima-fb public/jsx/*.jsx"
   },
