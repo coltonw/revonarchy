@@ -32,8 +32,7 @@ exports.revonarch = function *() {
     groupId = groupReq._id;
   }
 
-  if ((groupReq !== null && expectedGroup !== null && !groupReq._id.equals(expectedGroup._id)) &&
-      (groupReq !== null ||  expectedGroup !== null)) {
+  if (groupReq && expectedGroup && !groupReq._id.equals(expectedGroup._id)) {
     throw new Error('Group does not match expected group.');
   }
 

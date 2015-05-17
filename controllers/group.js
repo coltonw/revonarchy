@@ -14,7 +14,7 @@ var converter = require('../lib/mongooseHelpers');
 // Ties between the most common groups are broken
 // by the smallest group being chosen first.
 // Behavior is undefined if the groups are the same size.
-exports.chooseGroup = function *(users) {
+exports.chooseGroup = function *(users, createOnNull) {
   var allQueueValues = {};
   var i;
   var userId;
@@ -55,7 +55,7 @@ exports.chooseGroup = function *(users) {
   } else if (maxGroupCount >= config.minGroupSize &&
       maxGroupCount / numUsers >= config.minGroupPercent) {
     return yield getSmallestGroup(maxGroup);
-  } else {
+  } else if (createOnNull) {
 
     // Create a new group because no existing group matches
     var tmpQueueValue;
@@ -75,7 +75,7 @@ exports.chooseGroup = function *(users) {
 
 exports.chooseGroupRoute = function *() {
   var users = converter.castIds(this.request.body.users);
-  var group = yield exports.chooseGroup(users);
+  var group = yield exports.chooseGroup(users, true);
 
   // You need to wrap the response in case its null,
   // since it still needs to be JSON.
