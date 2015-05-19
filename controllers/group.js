@@ -35,14 +35,14 @@ exports.chooseGroup = function *(users, createOnNull) {
       for (i = 0; i < allQueueValues[userId].length; i++) {
         tmpGroupId = allQueueValues[userId][i].groupId;
         if (!groups[tmpGroupId]) {
-          groups[tmpGroupId] = 1;
+          groups[tmpGroupId] = [allQueueValues[userId][i]];
         } else {
-          groups[tmpGroupId]++;
+          groups[tmpGroupId].push(allQueueValues[userId][i]);
         }
-        if (groups[tmpGroupId] > maxGroupCount) {
-          maxGroupCount = groups[tmpGroupId];
+        if (groups[tmpGroupId].length > maxGroupCount) {
+          maxGroupCount = groups[tmpGroupId].length;
           maxGroup = [tmpGroupId];
-        } else if (groups[tmpGroupId] === maxGroupCount) {
+        } else if (groups[tmpGroupId].length === maxGroupCount) {
           maxGroup.push(tmpGroupId);
         }
       }
@@ -50,11 +50,19 @@ exports.chooseGroup = function *(users, createOnNull) {
     }
   }
 
+  var smallestGroup;
+
   if (numUsers === maxGroupCount) {
-    return yield getSmallestGroup(maxGroup);
+    smallestGroup = yield getSmallestGroup(maxGroup);
+    if (smallestGroup) {
+      yield createMissingQueueValues(smallestGroup._id, users, groups[smallestGroup._id.toString()]);
+    }
+    return smallestGroup;
   } else if (maxGroupCount >= config.minGroupSize &&
       maxGroupCount / numUsers >= config.minGroupPercent) {
-    return yield getSmallestGroup(maxGroup);
+    smallestGroup = yield getSmallestGroup(maxGroup);
+    yield createMissingQueueValues(smallestGroup._id, users, groups[smallestGroup._id.toString()]);
+    return smallestGroup;
   } else if (createOnNull) {
 
     // Create a new group because no existing group matches
@@ -107,4 +115,21 @@ function *getSmallestGroup(groupIds) {
       totalUsers: smallestGroupSize
     });
   }
+}
+
+function *createMissingQueueValues(groupId, users, currentQueueValues) {
+  var i, j, found;
+  for (i = 0; i < users.length; i++) {
+    found = false;
+    for (j = 0; j < currentQueueValues.length; j++) {
+      if (users[i]._id.toString() === currentQueueValues[j].userId.toString()) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      yield QueueValue.create(users[i]._id, groupId);
+    }
+  }
+
 }

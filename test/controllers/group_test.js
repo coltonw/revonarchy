@@ -2,6 +2,7 @@ var config = require('../../config');
 var request = require('supertest');
 var should = require('should');
 var app = require('../../app');
+var QueueValue = require('../../models/queueValue');
 
 var utils = require('../utils');
 
@@ -201,6 +202,9 @@ describe('group controller', function() {
       }).then(function(groupResults) {
         groupResults.should.not.have.property('group', null);
         groupResults.group._id.should.equal(groupId.toString());
+        return QueueValue.listByGroup(groupId.toString());
+      }).then(function(queueValues) {
+        queueValues.length.should.equal(emailAddresses.length);
         done();
       }).catch(function(e) {
         e = e || new Error('Promise had a rejection with no error');
