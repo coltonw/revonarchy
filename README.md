@@ -28,12 +28,6 @@ Either way, any users that already have a queue value for that group use that
 queue value and any that don't create a new random queue value with that user
 and group id value.
 
-## Data Format
+## Attributions
 
-Users - `id` `emailAddress` `name`?
-
-Email addresses must be unique.
-
-Queue Values - `userId` `groupId` `queueValue`
-
-Each user id and group id combo must be unique.
+[Crown favicon](http://www.aha-soft.com/iconsets.htm)

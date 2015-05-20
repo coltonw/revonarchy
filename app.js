@@ -22,7 +22,7 @@ var app = koa();
 /**
  * ignore favicon
  */
-app.use(middlewares.favicon());
+app.use(middlewares.favicon(__dirname + '/public/images/favicon.ico'));
 
 /**
  * response time header
