@@ -221,6 +221,45 @@ var Application = (function() {
     }
   });
 
+  var StaticLinks = React.createClass({
+    render: function() {
+      var Glyphicon = ReactBootstrap.Glyphicon;
+      var encodedUsers = [];
+      var allHref;
+      var links;
+      var encodeUser = function(user) {
+        var tmpUser = {
+          name: user.name,
+          email: user.email
+        };
+        return encodeURIComponent(JSON.stringify(tmpUser));
+      };
+      var i;
+      for(i = 0; i < this.props.users.length; i++) {
+        encodedUsers.push(encodeUser(this.props.users[i]));
+      }
+      for(i = 0; i < this.props.previousUsers.length; i++) {
+        encodedUsers.push(encodeUser(this.props.previousUsers[i]));
+      }
+      if (encodedUsers.length > 0) {
+        allHref = '/?user=' + encodedUsers.join('&user=');
+        links = (
+          <a href={allHref}>
+            <Glyphicon glyph='link' />
+            <span>{'Permalink'}</span>
+          </a>
+        );
+      } else {
+        links = '';
+      }
+      return (
+        <div className='revonarch-section'>
+          {links}
+        </div>
+      );
+    }
+  })
+
   var getSavedUsers = function() {
     var locallyStoredUsers;
     try {
@@ -451,6 +490,9 @@ var Application = (function() {
                 onRevonarch={this.revonarch}
                 parentState={this.state}
                 disabled={!this.state.groupFetched} />
+            <StaticLinks
+                users={this.state.users}
+                previousUsers={this.state.previousUsers} />
           </div>
         </div>
       );
