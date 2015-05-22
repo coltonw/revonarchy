@@ -40,7 +40,9 @@
 a .glyphicon + span {
   display: inline-block;
   margin-left: @padding-xs-horizontal;
-  text-decoration: underline;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .navbar h1 {
@@ -68,7 +70,12 @@ h1, .revonarch-red {
 }
 
 .revonarch-section {
-  margin-top: @standard-margin-vertical;
+  margin-top: @padding-base-horizontal;
+}
+
+.links-separator {
+  display: inline-block;
+  margin: 0 @padding-base-horizontal;
 }
 
 // Coloring the label I don't like on the dark background,

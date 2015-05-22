@@ -226,7 +226,8 @@ var Application = (function() {
       var Glyphicon = ReactBootstrap.Glyphicon;
       var encodedUsers = [];
       var allHref;
-      var links;
+      var currentHref;
+      var currentLink;
       var encodeUser = function(user) {
         var tmpUser = {
           name: user.name,
@@ -238,25 +239,38 @@ var Application = (function() {
       for(i = 0; i < this.props.users.length; i++) {
         encodedUsers.push(encodeUser(this.props.users[i]));
       }
+      currentHref = '/?user=' + encodedUsers.join('&user=');
       for(i = 0; i < this.props.previousUsers.length; i++) {
         encodedUsers.push(encodeUser(this.props.previousUsers[i]));
       }
       if (encodedUsers.length > 0) {
         allHref = '/?user=' + encodedUsers.join('&user=');
-        links = (
-          <a href={allHref}>
-            <Glyphicon glyph='link' />
-            <span>{'Permalink'}</span>
-          </a>
+        if (this.props.users.length > 0) {
+          currentLink = [(
+            <span className='links-separator' >-</span>
+          ), (
+            <a href={currentHref}>
+              <Glyphicon glyph='link' />
+              <span>{'Selected Comrades Permalink'}</span>
+            </a>
+          )]
+        } else {
+          currentLink = '';
+        }
+        return (
+          <div className='revonarch-section text-center'>
+            <a href={allHref}>
+              <Glyphicon glyph='link' />
+              <span>{'All Comrades Permalink'}</span>
+            </a>
+            {currentLink}
+          </div>
         );
       } else {
-        links = '';
+        return (
+          <div />
+        );
       }
-      return (
-        <div className='revonarch-section'>
-          {links}
-        </div>
-      );
     }
   })
 
