@@ -28,6 +28,12 @@ Either way, any users that already have a queue value for that group use that
 queue value and any that don't create a new random queue value with that user
 and group id value.
 
+### Do it Again
+
+Users are kept as local storage on the browser where they were created. Also,
+there are hard links which can be used to get the same users on other browsers
+without requiring re-typing all the information.
+
 ## Attributions
 
 [Crown favicon](http://www.aha-soft.com/iconsets.htm)
