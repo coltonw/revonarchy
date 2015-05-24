@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/coltonw/revonarchy",
   "dependencies": {
-    "koa": "^0.20.0",
+    "koa": "^0.21.0",
     "koa-middlewares": "^3.0.1",
     "mongoose": "^4.0.0",
     "bootstrap": "^3.3.4"
