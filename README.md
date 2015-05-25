@@ -21,12 +21,11 @@ such that every participant has their **queue value** lowered except the
 The list of users is submitted.  All the queue values are grabbed for all the
 users.  If there is any group id which among those which either 100% of the
 users have queue values for or at least a minimum number have queue values for
-(going to choose 3 at first) *and* at least some percentage have queue values for
-(going to choose 35% at first) then the group which qualifies with the highest
-percent match is used.  If no group qualifies, a new group uuid is generated.
-Either way, any users that already have a queue value for that group use that
-queue value and any that don't create a new random queue value with that user
-and group id value.
+(currently 3) *and* at least some percentage have queue values for (currently
+35%) then the group which qualifies with the highest percent match is used.  If
+no group qualifies, a new group uuid is generated. Either way, any users that
+already have a queue value for that group use that queue value and any that
+don't create a new random queue value with that user and group id value.
 
 ### Do it Again
 

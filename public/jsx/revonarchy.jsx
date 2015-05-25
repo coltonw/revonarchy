@@ -57,7 +57,7 @@ var Application = (function() {
             onChange={this.handleChange}
             ref='userNameInput'
           />
-          <Input type='submit' value='Create User' />
+          <Input type='submit' value='Create or Add User' />
         </form>
       );
     }
