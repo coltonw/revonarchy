@@ -236,11 +236,11 @@ var Application = (function() {
         return encodeURIComponent(JSON.stringify(tmpUser));
       };
       var i;
-      for(i = 0; i < this.props.users.length; i++) {
+      for (i = 0; i < this.props.users.length; i++) {
         encodedUsers.push(encodeUser(this.props.users[i]));
       }
       currentHref = '/?user=' + encodedUsers.join('&user=');
-      for(i = 0; i < this.props.previousUsers.length; i++) {
+      for (i = 0; i < this.props.previousUsers.length; i++) {
         encodedUsers.push(encodeUser(this.props.previousUsers[i]));
       }
       if (encodedUsers.length > 0) {

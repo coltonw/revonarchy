@@ -118,7 +118,9 @@ function *getSmallestGroup(groupIds) {
 }
 
 function *createMissingQueueValues(groupId, users, currentQueueValues) {
-  var i, j, found;
+  var i;
+  var j;
+  var found;
   for (i = 0; i < users.length; i++) {
     found = false;
     for (j = 0; j < currentQueueValues.length; j++) {
