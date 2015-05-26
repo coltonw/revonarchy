@@ -253,7 +253,7 @@ var Application = (function() {
               <Glyphicon glyph='link' />
               <span>{'Selected Comrades Permalink'}</span>
             </a>
-          )]
+          )];
         } else {
           currentLink = '';
         }
@@ -272,7 +272,7 @@ var Application = (function() {
         );
       }
     }
-  })
+  });
 
   var getSavedUsers = function() {
     var locallyStoredUsers;
