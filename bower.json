@@ -13,6 +13,6 @@
     "bower_components"
   ],
   "dependencies": {
-    "react-bootstrap": "^0.21.2"
+    "react-bootstrap": "^0.23.0"
   }
 }
