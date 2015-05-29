@@ -83,11 +83,15 @@ var Application = (function() {
       var Button = ReactBootstrap.Button;
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+      var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+      var Tooltip = ReactBootstrap.Tooltip;
       if (!this.props.finalized) {
         return (
           <ButtonToolbar>
             <ButtonGroup>
-              <Button disabled={this.props.finalized}>{userDisplay(this.props)}</Button>
+              <OverlayTrigger placement='bottom' overlay={<Tooltip>{this.props.email}</Tooltip>}>
+                <Button disabled={this.props.finalized}>{userDisplay(this.props)}</Button>
+              </OverlayTrigger>
               <Button onClick={this.onRemove} disabled={this.props.finalized}><Glyphicon glyph='remove' /></Button>
             </ButtonGroup>
           </ButtonToolbar>
@@ -140,11 +144,15 @@ var Application = (function() {
       var Button = ReactBootstrap.Button;
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+      var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+      var Tooltip = ReactBootstrap.Tooltip;
       if (!this.props.finalized) {
         return (
           <ButtonToolbar>
             <ButtonGroup>
-              <Button>{userDisplay(this.props)}</Button>
+              <OverlayTrigger placement='bottom' overlay={<Tooltip>{this.props.email}</Tooltip>}>
+                <Button>{userDisplay(this.props)}</Button>
+              </OverlayTrigger>
               <Button onClick={this.onAdd}><Glyphicon glyph='plus' /></Button>
             </ButtonGroup>
           </ButtonToolbar>
