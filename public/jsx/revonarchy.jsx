@@ -32,6 +32,7 @@ var Application = (function() {
 
     render: function() {
       var Input = ReactBootstrap.Input;
+      var ButtonInput = ReactBootstrap.ButtonInput;
       return (
         <form onSubmit={this.props.onSubmit} >
           <h3>Add comrades who could be chosen as <span className='revonarch-red'>Revonarch</span></h3>
@@ -57,7 +58,7 @@ var Application = (function() {
             onChange={this.handleChange}
             ref='userNameInput'
           />
-          <Input type='submit' value='Create or Add User' />
+          <ButtonInput type='submit' value='Create or Add User' />
         </form>
       );
     }
@@ -104,25 +105,25 @@ var Application = (function() {
 
   var AddedUsers = React.createClass({
     render: function() {
+      var CSSTransitionGroup = React.addons.CSSTransitionGroup;
       var _this = this;
-      var header = '';
-      if (this.props.users.length > 0) {
-        header = (
-          <h3>Current Comrades</h3>
-        );
-      }
       var addedUsers = this.props.users.map(function (user) {
         return (
           <AddedUser key={user.email} name={user.name} email={user.email} onRemove={_this.props.onRemove}
             finalized={_this.props.finalized} />
         );
       });
+      if (this.props.users.length > 0) {
+        // add the header to the beginning if there are any users
+        addedUsers.unshift(
+          <h3 key='@@header'>Current Comrades</h3>
+        );
+      }
       if (!this.props.finalized) {
         return (
-          <div className='added-users' >
-            {header}
+          <CSSTransitionGroup component='div' transitionName='user-transitioning' className='added-users'>
             {addedUsers}
-          </div>
+          </CSSTransitionGroup>
         );
       } else {
         return (
@@ -165,6 +166,7 @@ var Application = (function() {
 
   var PreviousUsers = React.createClass({
     render: function() {
+      var CSSTransitionGroup = React.addons.CSSTransitionGroup;
       var _this = this;
       var previousUsers = this.props.users.map(function (user) {
         return (
@@ -172,9 +174,9 @@ var Application = (function() {
         );
       });
       return (
-        <div className='removed-users' >
+        <CSSTransitionGroup component='div' transitionName='user-transitioning' className='removed-users'>
           {previousUsers}
-        </div>
+        </CSSTransitionGroup>
       );
     }
   });
@@ -255,9 +257,9 @@ var Application = (function() {
         allHref = '/?user=' + encodedUsers.join('&user=');
         if (this.props.users.length > 0) {
           currentLink = [(
-            <span className='links-separator' >-</span>
+            <span key='seperator' className='links-separator' >-</span>
           ), (
-            <a href={currentHref}>
+            <a key='link' href={currentHref}>
               <Glyphicon glyph='link' />
               <span>{'Selected Comrades Permalink'}</span>
             </a>
@@ -302,6 +304,7 @@ var Application = (function() {
       var val = parts[1];
 
       key = decodeURIComponent(key);
+
       // missing `=` should be `null`:
       // http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
       val = val === undefined ? null : decodeURIComponent(val);

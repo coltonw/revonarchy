@@ -61,6 +61,24 @@ h1, .revonarch-red {
   color: @revonarch-red;
 }
 
+.user-transitioning-enter {
+  opacity: 0.01;
+  transition: opacity .5s ease-in;
+
+  &.user-transitioning-enter-active {
+    opacity: 1;
+  }
+}
+
+.user-transitioning-leave {
+  opacity: 1;
+  transition: opacity .5s ease-in;
+
+  &.user-transitioning-leave-active {
+    opacity: 0.01;
+  }
+}
+
 .added-users, .removed-users {
   .btn-toolbar+.btn-toolbar {
     margin-top: @small-margin-vertical;
