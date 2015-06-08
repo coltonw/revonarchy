@@ -9,12 +9,12 @@ var queue = require('./controllers/queue');
 var user = require('./controllers/user');
 var group = require('./controllers/group');
 
-module.exports = function routes(app) {
-  app.get('/', home);
+module.exports = function routes(router) {
+  router.get('/', home);
 
-  app.post('/user', user.create);
+  router.post('/user', user.create);
 
-  app.post('/group', group.chooseGroupRoute);
+  router.post('/group', group.chooseGroupRoute);
 
-  app.post('/revonarch', queue.revonarch);
+  router.post('/revonarch', queue.revonarch);
 };

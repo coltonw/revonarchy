@@ -10,6 +10,7 @@
  */
 
 var middlewares = require('koa-middlewares');
+var router = middlewares.router();
 var routes = require('./routes');
 var config = require('./config');
 var path = require('path');
@@ -57,8 +58,8 @@ mongoose.connect(config.mongoUri);
 /**
  * router
  */
-app.use(middlewares.router(app));
-routes(app);
+routes(router);
+app.use(router.routes()).use(router.allowedMethods());;
 
 app = module.exports = http.createServer(app.callback());
 
