@@ -5,6 +5,7 @@
  */
 
 var config = require('../config');
+var R = require('ramda');
 
 var QueueValue = require('../models/queueValue');
 var Group = require('../models/group');
@@ -121,14 +122,22 @@ function *createMissingQueueValues(groupId, users, currentQueueValues) {
   var i;
   var j;
   var found;
+  var findMatch;
+  var idStrs;
   for (i = 0; i < users.length; i++) {
-    found = false;
-    for (j = 0; j < currentQueueValues.length; j++) {
+    findMatch = R.find(R.eq(users[i]._id.toString()));
+    console.log('Found fake: ' + findMatch([users[i]._id.toString()]));
+    console.log('Not found fake: ' + findMatch(['herb']));
+    found = !R.isNil(findMatch(R.map(function(qv) {return qv.userId.toString();}, currentQueueValues)));
+    console.log(currentQueueValues);
+    console.log(R.map(function(qv) {return qv.userId.toString()}, currentQueueValues));
+    console.log('Found: ' + found);
+    /*for (j = 0; j < currentQueueValues.length; j++) {
       if (users[i]._id.toString() === currentQueueValues[j].userId.toString()) {
         found = true;
         break;
       }
-    }
+    }*/
     if (!found) {
       yield QueueValue.create(users[i]._id, groupId);
     }
