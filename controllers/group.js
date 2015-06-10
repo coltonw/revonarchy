@@ -121,24 +121,13 @@ function *getSmallestGroup(groupIds) {
 function *createMissingQueueValues(groupId, users, currentQueueValues) {
   var i;
   var j;
-  var found;
   var findMatch;
-  var idStrs;
+  var noMatch;
+  var currentUserIdStrings = R.map(function(qv) {return qv.userId.toString();}, currentQueueValues);
   for (i = 0; i < users.length; i++) {
     findMatch = R.find(R.eq(users[i]._id.toString()));
-    console.log('Found fake: ' + findMatch([users[i]._id.toString()]));
-    console.log('Not found fake: ' + findMatch(['herb']));
-    found = !R.isNil(findMatch(R.map(function(qv) {return qv.userId.toString();}, currentQueueValues)));
-    console.log(currentQueueValues);
-    console.log(R.map(function(qv) {return qv.userId.toString()}, currentQueueValues));
-    console.log('Found: ' + found);
-    /*for (j = 0; j < currentQueueValues.length; j++) {
-      if (users[i]._id.toString() === currentQueueValues[j].userId.toString()) {
-        found = true;
-        break;
-      }
-    }*/
-    if (!found) {
+    noMatch = R.pipe(findMatch, R.isNil);
+    if (noMatch(currentUserIdStrings)) {
       yield QueueValue.create(users[i]._id, groupId);
     }
   }
