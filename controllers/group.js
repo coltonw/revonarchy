@@ -6,6 +6,7 @@
 
 var config = require('../config');
 var R = require('ramda');
+var co = require('co');
 
 var QueueValue = require('../models/queueValue');
 var Group = require('../models/group');
@@ -104,13 +105,40 @@ function *getSmallestGroup(groupIds) {
     return yield Group.get(groupIds[0]);
   } else {
     smallestGroup = null;
+    var yo = R.map(co.wrap(function *(gId) {
+      console.log(gId);
+      var gList = yield QueueValue.listByGroup(gId);
+        console.log(gList);
+      return [gId, gList];
+    }), groupIds);
+    console.log(yo);
+    var accum = Promise.resolve({
+      smallestGroup: null,
+      smallestGroupSize: Number.MAX_SAFE_INTEGER
+    });
+    var ho = R.reduceIndexed(co.wrap(function *(accumPromise, gListPromise, idx) {
+      var accum = yield accumPromise;
+      var gTuple = yield gTuplePromise;
+      console.log(accum);
+      var gId = gTuple[0];
+      var gList = gTuple[1];
+      if (gList.length < smallestGroupSize) {
+        accum.smallestGroupSize = gList.length;
+        accum.smallestGroup = gId;
+      }
+    }));
+    var result = yield ho(yo);
+    console.log(result);
     for (i = 0; i < groupIds.length; i++) {
       tmpGroupList = yield QueueValue.listByGroup(groupIds[i]);
+      console.log(tmpGroupList);
       if (tmpGroupList.length < smallestGroupSize) {
         smallestGroupSize = tmpGroupList.length;
         smallestGroup = groupIds[i];
       }
     }
+    console.log(smallestGroupSize)
+    console.log(smallestGroup)
     return yield Group.updateTotalUsers({
       _id: smallestGroup,
       totalUsers: smallestGroupSize
