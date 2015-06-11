@@ -6,7 +6,6 @@
 
 var config = require('../config');
 var R = require('ramda');
-var co = require('co');
 
 var QueueValue = require('../models/queueValue');
 var Group = require('../models/group');
