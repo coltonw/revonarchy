@@ -51,33 +51,40 @@ exports.chooseGroup = function *(users, createOnNull) {
     }
   }
 
-  var smallestGroup;
+  var smallestGroup, completeQueueValues;
 
   if (numUsers === maxGroupCount) {
     smallestGroup = yield getSmallestGroup(maxGroup);
     if (smallestGroup) {
-      yield createMissingQueueValues(smallestGroup._id, users, groups[smallestGroup._id.toString()]);
+      completeQueueValues = yield createMissingQueueValues(smallestGroup._id, users, groups[smallestGroup._id.toString()]);
+      smallestGroup.queueValues = completeQueueValues;
     }
     return smallestGroup;
   } else if (maxGroupCount >= config.minGroupSize &&
       maxGroupCount / numUsers >= config.minGroupPercent) {
     smallestGroup = yield getSmallestGroup(maxGroup);
-    yield createMissingQueueValues(smallestGroup._id, users, groups[smallestGroup._id.toString()]);
+    completeQueueValues = yield createMissingQueueValues(smallestGroup._id, users, groups[smallestGroup._id.toString()]);
+    smallestGroup.queueValues = completeQueueValues;
     return smallestGroup;
   } else if (createOnNull) {
 
     // Create a new group because no existing group matches
     var tmpQueueValue;
     var groupId = null;
+
+    completeQueueValues = [];
     for (i = 0; i < users.length; i++) {
       userId = users[i]._id;
       tmpQueueValue = yield QueueValue.create(userId, groupId);
+      completeQueueValues.push(tmpQueueValue);
 
       // In the case that the groupId was null, we need to reset the groupId
       // based on the newly generated one.
       groupId = tmpQueueValue.groupId;
     }
-    return yield Group.create(groupId);
+    smallestGroup = yield Group.create(groupId);
+    smallestGroup.queueValues = completeQueueValues;
+    return smallestGroup;
   }
 
 };
@@ -123,13 +130,15 @@ function *createMissingQueueValues(groupId, users, currentQueueValues) {
   var j;
   var findMatch;
   var noMatch;
+  var tmpQueueValue;
   var currentUserIdStrings = R.map(function(qv) {return qv.userId.toString();}, currentQueueValues);
   for (i = 0; i < users.length; i++) {
     findMatch = R.find(R.eq(users[i]._id.toString()));
     noMatch = R.pipe(findMatch, R.isNil);
     if (noMatch(currentUserIdStrings)) {
-      yield QueueValue.create(users[i]._id, groupId);
+      tmpQueueValue = yield QueueValue.create(users[i]._id, groupId);
+      currentQueueValues.push(tmpQueueValue);
     }
   }
-
+  return currentQueueValues;
 }
