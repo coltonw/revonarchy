@@ -12,6 +12,7 @@ describe('group controller', function() {
     var emailAddress2 = 'coltonw[thistimewithfeeling]@gmail.com';
     var usersArray = [];
     var revonarch1;
+    var revonarchQueueValue;
 
     try {
       Promise.all([
@@ -33,9 +34,19 @@ describe('group controller', function() {
         return utils.testPost('/group', {users:usersArray});
       }).then(function(groupResults) {
         groupResults.group.revonarchId.should.equal(revonarch1._id);
+        for (i = 0; i < groupResults.queueValues.length; i++) {
+          if (groupResults.queueValues[i].userId === groupResults.group.revonarchId) {
+            revonarchQueueValue = groupResults.queueValues[i].queueValue;
+            break;
+          }
+        }
 
-        // I would not expect this to be undefined.  HMM
-        console.log(groupResults.group.queueValues);
+        for (i = 0; i < groupResults.queueValues.length; i++) {
+          if (groupResults.queueValues[i].userId !== groupResults.group.revonarchId) {
+            revonarchQueueValue.should.be.above(groupResults.queueValues[i].queueValue);
+          }
+        }
+
         done();
       }).catch(function(e) {
         e = e || new Error('Promise had a rejection with no error');

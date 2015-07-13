@@ -96,7 +96,8 @@ exports.chooseGroupRoute = function *() {
   // You need to wrap the response in case its null,
   // since it still needs to be JSON.
   this.body = {
-    group: group
+    group: group,
+    queueValues: (group ? group.queueValues : undefined)
   };
 };
 
