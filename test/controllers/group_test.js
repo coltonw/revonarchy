@@ -33,6 +33,9 @@ describe('group controller', function() {
         return utils.testPost('/group', {users:usersArray});
       }).then(function(groupResults) {
         groupResults.group.revonarchId.should.equal(revonarch1._id);
+
+        // I would not expect this to be undefined.  HMM
+        console.log(groupResults.group.queueValues);
         done();
       }).catch(function(e) {
         e = e || new Error('Promise had a rejection with no error');
