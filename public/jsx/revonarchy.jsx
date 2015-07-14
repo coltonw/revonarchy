@@ -383,6 +383,7 @@ var Application = (function() {
         finalized: false,
         group: null,
         groupFetched: false,
+        queueValuesHash: null,
         revonarch: null
       };
     },
@@ -497,11 +498,22 @@ var Application = (function() {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         success: function(data) {
+          var i, qvHash;
           if (data && typeof data.group !== 'undefined') {
             _this.setState({
               group: data.group,
               groupFetched: true
             });
+
+            if (Array.isArray(data.queueValues)) {
+              qvHash = {};
+              for (i = 0; i < data.queueValues.length; i++) {
+                qvHash[data.queueValues[i].userId] = data.queueValues[i].queueValue;
+              }
+              _this.setState({
+                queueValuesHash: qvHash
+              });
+            }
           }
         },
         failure: function(errMsg) {
