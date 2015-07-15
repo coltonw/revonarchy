@@ -588,7 +588,9 @@ var Application = (function() {
             <AddedUsers
                 users={this.state.users}
                 onRemove={this.removeUser}
-                finalized={this.state.finalized} />
+                finalizing={this.state.finalized}
+                finalized={this.state.groupFetched}
+                queueValues={this.state.queueValuesHash} />
             {finalizeGroup}
             <Revonarch
                 onRevonarch={this.revonarch}
