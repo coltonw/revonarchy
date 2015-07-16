@@ -316,7 +316,6 @@ var Application = (function() {
       } else {
         ret[key] = [ret[key], val];
       }
-
       return ret;
     }, {});
   };
@@ -383,7 +382,6 @@ var Application = (function() {
         finalized: false,
         group: null,
         groupFetched: false,
-        queueValuesHash: null,
         revonarch: null
       };
     },
@@ -499,21 +497,20 @@ var Application = (function() {
         dataType: 'json',
         success: function(data) {
           var i, qvHash;
-          if (data && typeof data.group !== 'undefined') {
+          if (data && typeof data.group !== 'undefined' && Array.isArray(data.queueValues)) {
+            qvHash = {};
+            for (i = 0; i < data.queueValues.length; i++) {
+              qvHash[data.queueValues[i].userId] = data.queueValues[i].queueValue;
+            }
+            for (i = 0; i < _this.state.users.length; i++) {
+              _this.state.users[i].queueValue = qvHash[_this.state.users[i]._id]
+            }
+            // TODO: Sort those users
             _this.setState({
               group: data.group,
-              groupFetched: true
+              groupFetched: true,
+              users: _this.state.users
             });
-
-            if (Array.isArray(data.queueValues)) {
-              qvHash = {};
-              for (i = 0; i < data.queueValues.length; i++) {
-                qvHash[data.queueValues[i].userId] = data.queueValues[i].queueValue;
-              }
-              _this.setState({
-                queueValuesHash: qvHash
-              });
-            }
           }
         },
         failure: function(errMsg) {
