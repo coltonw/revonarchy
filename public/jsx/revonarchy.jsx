@@ -505,7 +505,15 @@ var Application = (function() {
             for (i = 0; i < _this.state.users.length; i++) {
               _this.state.users[i].queueValue = qvHash[_this.state.users[i]._id]
             }
-            // TODO: Sort those users
+            _this.state.users.sort(function (a, b) {
+              if (a.queueValue > b.queueValue) {
+                return 1;
+              } else if (a.queueValue < b. queueValue) {
+                return -1;
+              } else {
+                return 0;
+              }
+            });
             _this.setState({
               group: data.group,
               groupFetched: true,
