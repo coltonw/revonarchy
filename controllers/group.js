@@ -134,7 +134,7 @@ function *createMissingQueueValues(groupId, users, currentQueueValues) {
   var tmpQueueValue;
   var currentUserIdStrings = R.map(function(qv) {return qv.userId.toString();}, currentQueueValues);
   for (i = 0; i < users.length; i++) {
-    findMatch = R.find(R.eq(users[i]._id.toString()));
+    findMatch = R.find(R.identical(users[i]._id.toString()));
     noMatch = R.pipe(findMatch, R.isNil);
     if (noMatch(currentUserIdStrings)) {
       tmpQueueValue = yield QueueValue.create(users[i]._id, groupId);
