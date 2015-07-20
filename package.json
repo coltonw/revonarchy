@@ -24,7 +24,7 @@
     "koa-middlewares": "^4.0.0",
     "mongoose": "^4.0.0",
     "bootstrap": "^3.3.4",
-    "ramda": "^0.15.1"
+    "ramda": "^0.17.0"
   },
   "engines": {
     "iojs": "1.6.1"
