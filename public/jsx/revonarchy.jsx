@@ -86,6 +86,7 @@ var Application = (function() {
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
       var OverlayTrigger = ReactBootstrap.OverlayTrigger;
       var Tooltip = ReactBootstrap.Tooltip;
+      var topPaddingClass;
       if (!this.props.finalized) {
         return (
           <ButtonToolbar>
@@ -98,7 +99,15 @@ var Application = (function() {
           </ButtonToolbar>
         );
       } else {
-        return <li>{userDisplay(this.props)}</li>;
+        console.log(this.props.distanceAbove);
+        if (this.props.distanceAbove > 2) {
+          topPaddingClass = 'major-top-padding';
+        } else if (this.props.distanceAbove > 1.1) {
+          topPaddingClass = 'minor-top-padding';
+        } else {
+          topPaddingClass = '';
+        }
+        return <li className={topPaddingClass}>{userDisplay(this.props)}</li>;
       }
     }
   });
@@ -107,12 +116,20 @@ var Application = (function() {
     render: function() {
       var CSSTransitionGroup = React.addons.CSSTransitionGroup;
       var _this = this;
-      var addedUsers = this.props.users.map(function (user) {
-        return (
+      var i;
+      var addedUsers = [];
+      var user;
+      var distanceAbove = 0;
+      for (i = 0; i < this.props.users.length; i++) {
+        user = this.props.users[i];
+        if (i > 0) {
+          distanceAbove = (user.queueValue - this.props.users[i-1].queueValue) * (this.props.users.length + 1);
+        }
+        addedUsers.push(
           <AddedUser key={user.email} name={user.name} email={user.email} onRemove={_this.props.onRemove}
-            finalized={_this.props.finalized} />
+            finalized={_this.props.finalized} distanceAbove={distanceAbove} />
         );
-      });
+      }
       if (this.props.users.length > 0) {
         // add the header to the beginning if there are any users
         addedUsers.unshift(

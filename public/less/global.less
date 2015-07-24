@@ -107,20 +107,25 @@ ul.added-users {
     margin-left: 20px;
     padding-left: 20px;
     border-left: 5px solid @gray-lighter;
-  }
+    &.major-top-padding {
+      padding-top: @padding-xl-vertical;
+    }
+    &.minor-top-padding {
+      padding-top: @padding-large-vertical;
+    }
+    &:first-of-type {
+      position: relative;
+      padding-left: 25px;
+      border-left: none;
+      font-size: @font-size-large;
+      color: @revonarch-red;
 
-  li:first-of-type {
-    position: relative;
-    padding-left: 25px;
-    border-left: none;
-    font-size: @font-size-large;
-    color: @revonarch-red;
-
-    &:before {
-      .glyphicon;
-      position: absolute;
-      left: -7px;
-      content: "\e211";
+      &:before {
+        .glyphicon;
+        position: absolute;
+        left: -7px;
+        content: "\e211";
+      }
     }
   }
 }
