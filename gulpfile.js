@@ -5,7 +5,7 @@ var merge = require('merge-stream');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
-var react = require('gulp-react');
+var babel = require('gulp-babel');
 
 gulp.task('clean', function (cb) {
   del(['public/css', 'public/javascript', 'public/fonts'], cb);
@@ -30,7 +30,9 @@ gulp.task('build:css', ['less', 'fonts'], function () {
 
 gulp.task('build:js', ['clean'], function() {
   var compiledJsx = gulp.src('./public/jsx/**.jsx')
-    .pipe(react());
+    .pipe(babel({
+      presets: ['react']
+    }));
   var libs = gulp.src(['bower_components/react-bootstrap/react-bootstrap.js']);
   return merge(libs, compiledJsx)
     .pipe(sourcemaps.init())

@@ -84,16 +84,12 @@ var Application = (function() {
       var Button = ReactBootstrap.Button;
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
-      var OverlayTrigger = ReactBootstrap.OverlayTrigger;
-      var Tooltip = ReactBootstrap.Tooltip;
       var topPaddingClass;
       if (!this.props.finalized) {
         return (
           <ButtonToolbar>
             <ButtonGroup>
-              <OverlayTrigger placement='bottom' overlay={<Tooltip>{this.props.email}</Tooltip>}>
-                <Button disabled={this.props.finalized}>{userDisplay(this.props)}</Button>
-              </OverlayTrigger>
+              <Button disabled={this.props.finalized}>{userDisplay(this.props)}</Button>
               <Button onClick={this.onRemove} disabled={this.props.finalized}><Glyphicon glyph='remove' /></Button>
             </ButtonGroup>
           </ButtonToolbar>
@@ -162,15 +158,11 @@ var Application = (function() {
       var Button = ReactBootstrap.Button;
       var ButtonGroup = ReactBootstrap.ButtonGroup;
       var ButtonToolbar = ReactBootstrap.ButtonToolbar;
-      var OverlayTrigger = ReactBootstrap.OverlayTrigger;
-      var Tooltip = ReactBootstrap.Tooltip;
       if (!this.props.finalized) {
         return (
           <ButtonToolbar>
             <ButtonGroup>
-              <OverlayTrigger placement='bottom' overlay={<Tooltip>{this.props.email}</Tooltip>}>
-                <Button>{userDisplay(this.props)}</Button>
-              </OverlayTrigger>
+              <Button>{userDisplay(this.props)}</Button>
               <Button onClick={this.onAdd}><Glyphicon glyph='plus' /></Button>
             </ButtonGroup>
           </ButtonToolbar>
@@ -235,13 +227,16 @@ var Application = (function() {
         revonarchSection = (
           <h2 className='hail-revonarch'>All hail the Revonarch <span className='revonarch-red'>{userDisplay(revonarch)}</span>!</h2>
         );
+      } else {
+        revonarchSection = (
+          <Button bsStyle={bsStyle} bsSize='large' onClick={this.props.onRevonarch}
+              disabled={this.props.disabled} block>
+            {'Confirm your new Revonarch'}
+          </Button>
+        )
       }
       return (
         <div className='revonarch-section'>
-          <Button bsStyle={bsStyle} bsSize='large' onClick={this.props.onRevonarch}
-              disabled={this.props.disabled} block>
-            {'Select the Revonarch'}
-          </Button>
           {revonarchSection}
         </div>
       );

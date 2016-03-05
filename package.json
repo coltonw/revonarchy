@@ -4,8 +4,8 @@
   "description": "System for choosing a decision maker.",
   "main": "app.js",
   "scripts": {
-    "test": "iojs ./node_modules/mocha/bin/_mocha test/controllers test/models",
-    "report": "iojs ./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha test/controllers test/models",
+    "test": "node ./node_modules/mocha/bin/_mocha test/controllers test/models",
+    "report": "node ./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha test/controllers test/models",
     "style": "jscs --esnext .",
     "jsxStyle": "jscs --esprima=esprima-fb public/jsx/*.jsx"
   },
@@ -20,32 +20,33 @@
   },
   "homepage": "https://github.com/coltonw/revonarchy",
   "dependencies": {
-    "koa": "^0.21.0",
-    "koa-middlewares": "^4.0.0",
-    "mongoose": "^4.0.0",
+    "koa": "^1.2.0",
+    "koa-middlewares": "^4.1.0",
+    "mongoose": "^4.4.0",
     "bootstrap": "^3.3.4",
-    "ramda": "^0.17.0"
+    "ramda": "^0.19.0"
   },
   "engines": {
-    "iojs": "1.6.1"
+    "node": "4.1.0"
   },
   "devDependencies": {
-    "mocha": "^2.2.0",
-    "istanbul-harmony": "^0.3.0",
-    "should": "^7.0.1",
-    "supertest": "^1.0.1",
-    "coveralls": "^2.11.0",
+    "babel-preset-react": "^6.5.0",
     "co": "^4.5.2",
-    "gulp": "^3.8.11",
+    "coveralls": "^2.11.0",
     "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^6.1.0",
+    "gulp-concat": "^2.5.2",
     "gulp-jshint": "^1.10.0",
     "gulp-less": "^3.0.2",
-    "main-bower-files": "^2.6.2",
     "gulp-sourcemaps": "^1.5.1",
-    "merge-stream": "^0.1.7",
     "gulp-uglify": "^1.1.0",
-    "gulp-concat": "^2.5.2",
     "gulp-util": "^3.0.4",
-    "gulp-react": "^3.0.1"
+    "istanbul-harmony": "^0.3.0",
+    "main-bower-files": "^2.6.2",
+    "merge-stream": "^0.1.7",
+    "mocha": "^2.2.0",
+    "should": "^7.0.1",
+    "supertest": "^1.0.1"
   }
 }
