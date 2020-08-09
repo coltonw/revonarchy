@@ -11,24 +11,24 @@ gulp.task('clean', function (cb) {
   del(['public/css', 'public/javascript', 'public/fonts'], cb);
 });
 
-gulp.task('less', ['clean'], function () {
+gulp.task('less', function () {
   return gulp.src('public/less/**/*.less')
     .pipe(less())
     .pipe(gulp.dest('public/css'));
 });
 
-gulp.task('fonts', ['clean'], function () {
+gulp.task('fonts', function () {
   return gulp.src('node_modules/bootstrap/fonts/**')
     .pipe(gulp.dest('public/fonts'));
 });
 
-gulp.task('build:css', ['less', 'fonts'], function () {
+gulp.task('build:css', gulp.series(gulp.parallel('less', 'fonts'), function () {
   return gulp.src('public/css/**/*.css')
     .pipe(concat('style.css'))
     .pipe(gulp.dest('public/css'));
-});
+}));
 
-gulp.task('build:js', ['clean'], function() {
+gulp.task('build:js', function() {
   var compiledJsx = gulp.src('./public/jsx/**.jsx')
     .pipe(babel({
       presets: ['react']
@@ -42,6 +42,4 @@ gulp.task('build:js', ['clean'], function() {
     .pipe(gulp.dest('public/javascript'));
 });
 
-gulp.task('default', ['clean', 'less', 'build:css', 'build:js'], function() {
-  // Any additional default tasks can go here
-});
+gulp.task('default', gulp.series('clean', gulp.parallel('build:css', 'build:js')));

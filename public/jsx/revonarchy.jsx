@@ -1,10 +1,15 @@
 var Application = (function() {
 
   var CreateUser = React.createClass({
-    handleChange: function() {
-      this.props.onUserInput(
-        this.refs.userEmailTextInput.getValue(),
-        this.refs.userNameInput.getValue()
+    handleEmailChange: function(e) {
+      this.props.onEmailUserInput(
+        e.target.value
+      );
+    },
+
+    handleNameChange: function(e) {
+      this.props.onNameUserInput(
+        e.target.value
       );
     },
 
@@ -40,22 +45,22 @@ var Application = (function() {
             type='email'
             placeholder='Enter email'
             label='Email Address'
-            value={this.props.email}
+            value={this.props.formState.email}
             bsStyle={this.emailValidationState()}
             hasFeedback
-            onChange={this.handleChange}
+            onChange={this.handleEmailChange}
             ref='userEmailTextInput'
           />
           <Input
             type='text'
             placeholder='Enter Nickname'
             label='Nickname'
-            value={this.props.name}
+            value={this.props.formState.name}
             required
             maxLength='200'
             bsStyle={this.nameValidationState()}
             hasFeedback
-            onChange={this.handleChange}
+            onChange={this.handleNameChange}
             ref='userNameInput'
           />
           <ButtonInput type='submit' value='Create or Add User' />
@@ -398,12 +403,25 @@ var Application = (function() {
       };
     },
 
-    onUserInput: function(email, name) {
-      this.setState({
-        createUser: {
-          email: email,
-          name: name
-        }
+    onEmailUserInput: function(email) {
+      this.setState(function (state) {
+        return {
+          createUser: {
+            email: email,
+            name: state.createUser.name
+          }
+        };
+      });
+    },
+
+    onNameUserInput: function(name) {
+      this.setState(function (state) {
+        return {
+          createUser: {
+            email: state.createUser.email,
+            name: name
+          }
+        };
       });
     },
 
@@ -433,6 +451,7 @@ var Application = (function() {
         return array;
       };
       var _this = this;
+      console.log(this.state);
       $.ajax('/user', {
         method: 'post',
         data: JSON.stringify({
@@ -581,7 +600,8 @@ var Application = (function() {
             <CreateUser
                 email={this.state.email}
                 name={this.state.name}
-                onUserInput={this.onUserInput}
+                onEmailUserInput={this.onEmailUserInput}
+                onNameUserInput={this.onNameUserInput}
                 onSubmit={this.createUser}
                 formState={this.state.createUser} />
             <PreviousUsers
